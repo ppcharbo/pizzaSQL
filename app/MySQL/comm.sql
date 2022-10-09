@@ -1,4 +1,4 @@
-insert into ingredient(id, ingredient) values ('1','farina')
+insert into ingredient(id, ingredient) values ('1','farina');
 insert into ingredient(id, ingredient) values ('2','pomodoro');
 insert into ingredient(id, ingredient) values ('3','oil extr vergine ');
 insert into ingredient(id, ingredient) values ('4','Salame');
