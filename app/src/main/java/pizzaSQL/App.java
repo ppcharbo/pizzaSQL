@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class App {
 	public static String list_pizzasSQL = "SELECT name FROM pizza ";
 
-	public void mainLoop() throws SQLException {
+	public void mainLoop() throws Exception {
 		System.out.println("1 - list all avelable pizza");
 		System.out.println("2 - Make an order ");
 		System.out.println("3 - List of current orders ");
@@ -38,16 +38,17 @@ public class App {
 		System.out.println("inside listOfOrder methd");
 
 	}
-
+ 
 	private void makeOrder() {
 		System.out.println("inside makeorder methd");
 
 	}
 
-	private void listPizza() throws SQLException {
+	private void listPizza() throws Exception {
 		System.out.println("inside pizza list methd");
 		Connection conn = makeconnection();
 		java.sql.Statement statement = conn.createStatement();
+	 
 		ResultSet resultPizza = statement.executeQuery(list_pizzasSQL);
 		while (resultPizza.next()) {
 
@@ -58,10 +59,11 @@ public class App {
 
 	}
 
-	public Connection makeconnection() {
+	public Connection makeconnection() throws ClassNotFoundException {
 		Connection conn = null;
 		try {
-			String url = "jdbc:mysql://127.0.0.1/pizza?user=root&password=tyghbn";
+			Class.forName("com.mysql.cj.jdbc.Driver");  
+			String url = "jdbc:mysql://127.0.0.1/pizza";
 			String user = "root";
 			String password = "tyghbn";
 
@@ -75,7 +77,7 @@ public class App {
 		return conn;
 	}
 
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws Exception {
 		new App().mainLoop();
 	}
 }
