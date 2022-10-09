@@ -61,7 +61,7 @@ public class App {
 	public Connection makeconnection() {
 		Connection conn = null;
 		try {
-			String url = "jdbc:mariadb://127.0.0.1/pizza?user=root&password=tyghbn";
+			String url = "jdbc:mysql://127.0.0.1/pizza?user=root&password=tyghbn";
 			String user = "root";
 			String password = "tyghbn";
 
