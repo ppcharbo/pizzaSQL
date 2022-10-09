@@ -19,7 +19,7 @@ name---> name
 
 
 
-
+select * from pizza left join ingredient on pizza.id=ingredient.id 
 
 
 

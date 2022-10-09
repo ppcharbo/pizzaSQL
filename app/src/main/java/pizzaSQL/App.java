@@ -11,14 +11,16 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class App {
-	public static String list_pizzasSQL = "SELECT name FROM pizza ";
+	public static String list_pizzasSQL = "SELECT id, name FROM pizza ";
+	public static String getIngredient = "SELECT ingredient,price  FROM ingredient   INNER JOIN pizza_ingredient  ON pizza_ingredient.ingredient_id = ingredient.id  WHERE pizza_ingredient.pizza_id = ?;";
 
 	public void mainLoop() throws Exception {
-		System.out.println("1 - list all avelable pizza");
-		System.out.println("2 - Make an order ");
-		System.out.println("3 - List of current orders ");
-		System.out.println("0 - Exit ");
 		while (true) {
+			System.out.println("1 - list all avelable pizza");
+			System.out.println("2 - Make an order ");
+			System.out.println("3 - List of current orders ");
+			System.out.println("4 - List of ingredient of pizza ");
+			System.out.println("0 - Exit ");
 
 			Scanner s = new Scanner(System.in);
 			String str = s.nextLine();
@@ -28,9 +30,30 @@ public class App {
 				makeOrder();
 			} else if (str.equals("3")) {
 				listOfOrder();
+			} else if (str.equals("4")) {
+				listOfIngredient();
 			} else if (str.equals("0")) {
 				break;
 			}
+		}
+	}
+
+	private void listOfIngredient() throws Exception {
+		System.out.println("inside listOfIngredient methd");
+		System.out.println("what pizza's information do you want ?");
+		Scanner s = new Scanner(System.in);
+		String str = s.nextLine();
+		System.out.println("inside pizza list methd");
+		Connection conn = makeconnection();
+		java.sql.Statement statement = conn.createStatement();
+
+		ResultSet resultPizza = statement.executeQuery(list_pizzasSQL);
+		while (resultPizza.next()) {
+
+			String nameOfPizza = resultPizza.getString("name");
+			String idOfPizza = resultPizza.getString("id");
+
+			System.out.println(idOfPizza + " " + nameOfPizza);
 		}
 	}
 
@@ -38,7 +61,7 @@ public class App {
 		System.out.println("inside listOfOrder methd");
 
 	}
- 
+
 	private void makeOrder() {
 		System.out.println("inside makeorder methd");
 
@@ -48,13 +71,14 @@ public class App {
 		System.out.println("inside pizza list methd");
 		Connection conn = makeconnection();
 		java.sql.Statement statement = conn.createStatement();
-	 
+
 		ResultSet resultPizza = statement.executeQuery(list_pizzasSQL);
 		while (resultPizza.next()) {
 
 			String nameOfPizza = resultPizza.getString("name");
+			String idOfPizza = resultPizza.getString("id");
 
-			System.out.println("name --> " + nameOfPizza);
+			System.out.println(idOfPizza + " " + nameOfPizza);
 		}
 
 	}
@@ -62,7 +86,7 @@ public class App {
 	public Connection makeconnection() throws ClassNotFoundException {
 		Connection conn = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");  
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			String url = "jdbc:mysql://127.0.0.1/pizza";
 			String user = "root";
 			String password = "tyghbn";
