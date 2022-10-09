@@ -1,8 +1,8 @@
-insert into ingredient(id, ingredient) values ('1','farina');
-insert into ingredient(id, ingredient) values ('2','pomodoro');
-insert into ingredient(id, ingredient) values ('3','oil extr vergine ');
-insert into ingredient(id, ingredient) values ('4','Salame');
-insert into ingredient(id, ingredient) values ('5','Mozzarella');
+insert into ingredient(id, ingredient,price) values ('1','ham','50');
+insert into ingredient(id, ingredient,price) values ('2','tomato','60');
+insert into ingredient(id, ingredient,price) values ('3','oil extra vergin ','66');
+insert into ingredient(id, ingredient,price) values ('4','Salame','100');
+insert into ingredient(id, ingredient,price) values ('5','Mozzarella','100');
 insert into pizza(id, name) values ('1','margerita');
 insert into pizza(id, name) values ('2','calabrese');
 insert into pizza(id, name) values ('3','napolitana');
