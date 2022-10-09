@@ -20,6 +20,8 @@ dependencies {
     // Use JUnit test framework.
     testImplementation 'junit:junit:4.13'
 
+// https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
+implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.2.0'
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:29.0-jre'
 }

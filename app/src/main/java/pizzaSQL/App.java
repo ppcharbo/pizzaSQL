@@ -3,12 +3,79 @@
  */
 package pizzaSQL;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import java.beans.Statement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Scanner;
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-    }
+public class App {
+	public static String list_pizzasSQL = "SELECT name FROM pizza ";
+
+	public void mainLoop() throws SQLException {
+		System.out.println("1 - list all avelable pizza");
+		System.out.println("2 - Make an order ");
+		System.out.println("3 - List of current orders ");
+		System.out.println("0 - Exit ");
+		while (true) {
+
+			Scanner s = new Scanner(System.in);
+			String str = s.nextLine();
+			if (str.equals("1")) {
+				listPizza();
+			} else if (str.equals("2")) {
+				makeOrder();
+			} else if (str.equals("3")) {
+				listOfOrder();
+			} else if (str.equals("0")) {
+				break;
+			}
+		}
+	}
+
+	private void listOfOrder() {
+		System.out.println("inside listOfOrder methd");
+
+	}
+
+	private void makeOrder() {
+		System.out.println("inside makeorder methd");
+
+	}
+
+	private void listPizza() throws SQLException {
+		System.out.println("inside pizza list methd");
+		Connection conn = makeconnection();
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet resultPizza = statement.executeQuery(list_pizzasSQL);
+		while (resultPizza.next()) {
+
+			String nameOfPizza = resultPizza.getString("name");
+
+			System.out.println("name --> " + nameOfPizza);
+		}
+
+	}
+
+	public Connection makeconnection() {
+		Connection conn = null;
+		try {
+			String url = "jdbc:mariadb://127.0.0.1/pizza?user=root&password=tyghbn";
+			String user = "root";
+			String password = "tyghbn";
+
+			conn = DriverManager.getConnection(url, user, password);
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return conn;
+	}
+
+	public static void main(String[] args) throws SQLException {
+		new App().mainLoop();
+	}
 }
