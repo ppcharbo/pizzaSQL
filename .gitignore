@@ -11,3 +11,5 @@ app/.classpath
 app/build.gradle
 
 .settings/
+
+app/MySQL/.Pizza.sql.swp
