@@ -31,7 +31,7 @@ CREATE TABLE `drinks` (
 ) ;
 
 CREATE TABLE `customers` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `address` varchar(255) NOT NULL,

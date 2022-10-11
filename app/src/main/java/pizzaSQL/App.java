@@ -5,20 +5,26 @@ package pizzaSQL;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
 public class App {
 	public static String list_pizzasSQL = "SELECT id, name FROM pizza ";
+	public static String ADD_CUSTOMER = "insert into customers(name,phone,address,postal_code) values (?,?,?,?);";
 	public static String getIngredient = "SELECT ingredient,price  FROM ingredient   INNER JOIN pizza_ingredient  ON pizza_ingredient.ingredient_id = ingredient.id  WHERE pizza_ingredient.pizza_id = ?;";
+	public Connection conn;
 
 	public void mainLoop() throws Exception {
+		conn = makeconnection();
 		while (true) {
+			System.out.println(" ");
 			System.out.println("1 - list all avelable pizza");
 			System.out.println("2 - Make an order ");
 			System.out.println("3 - List of current orders ");
 			System.out.println("4 - List of ingredient of pizza ");
+			System.out.println("5 - Menu of customers ");
 			System.out.println("0 - Exit ");
 
 			Scanner s = new Scanner(System.in);
@@ -31,10 +37,64 @@ public class App {
 				listOfOrder();
 			} else if (str.equals("4")) {
 				listOfIngredient();
+			} else if (str.equals("5")) {
+				manageCustemer();
 			} else if (str.equals("0")) {
 				break;
 			}
 		}
+	}
+
+	private void manageCustemer() throws Exception {
+		while (true) {
+			System.out.println("inside manageCustemer method");
+			System.out.println("1 - Create a new customer");
+			System.out.println("2 - Delete Customer ");
+			System.out.println("3 - List All customers ");
+			System.out.println("0 - Exit ");
+			Scanner s = new Scanner(System.in);
+			String str = s.nextLine();
+			if (str.equals("1")) {
+				newCustomer();
+			} else if (str.equals("2")) {
+				deleteCustomer();
+			} else if (str.equals("3")) {
+				listAllCustomer();
+			} else if (str.equals("0")) {
+				break;
+			}
+		}
+	}
+
+	private void listAllCustomer() {
+		System.out.println("inside listAllCustomer methd");
+
+	}
+
+	private void deleteCustomer() {
+		System.out.println("inside deleteCustomer methd");
+
+	}
+
+	private void newCustomer() throws Exception {
+		System.out.println("inside new Custermer methode");
+		System.out.println("insert name ");
+		Scanner s = new Scanner(System.in);
+		String name = s.nextLine();
+		System.out.println("insert phone ");
+		String phone = s.nextLine();
+		System.out.println("insert address ");
+		String address = s.nextLine();
+		System.out.println("insert postal code ");
+		String postalCode = s.nextLine();
+		PreparedStatement prepareStatement = conn.prepareStatement(ADD_CUSTOMER);
+
+		prepareStatement.setString(1, name);
+		prepareStatement.setString(2, phone);
+		prepareStatement.setString(3, address);
+		prepareStatement.setString(4, postalCode);
+		prepareStatement.executeUpdate();
+
 	}
 
 	private void listOfIngredient() throws Exception {
@@ -43,7 +103,7 @@ public class App {
 		Scanner s = new Scanner(System.in);
 		String str = s.nextLine();
 		System.out.println("inside pizza list methd");
-		Connection conn = makeconnection();
+
 		java.sql.Statement statement = conn.createStatement();
 
 		ResultSet resultPizza = statement.executeQuery(list_pizzasSQL);
