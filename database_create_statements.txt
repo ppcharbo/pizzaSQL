@@ -1,0 +1,80 @@
+CUSTOMERS:
+CREATE TABLE `customers` (
+  `id` int NOT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `postal_code` varchar(45) NOT NULL,
+  `phone` varchar(45) DEFAULT NULL,
+  `adress` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`)
+) 
+
+DESSERTS:
+CREATE TABLE `desserts` (
+  `id` int NOT NULL,
+  `name` varchar(25) DEFAULT NULL,
+  `price` double NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+DRINKS:
+CREATE TABLE `drinks` (
+  `id` int NOT NULL,
+  `name` varchar(25) DEFAULT NULL,
+  `price` double NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+ITEM TYPES:
+CREATE TABLE `item_types` (
+  `item_type` int NOT NULL,
+  `item_name` varchar(25) NOT NULL,
+  PRIMARY KEY (`item_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+MENUITEMS:
+CREATE TABLE `menuitems` (
+  `id` int NOT NULL,
+  `name` varchar(25) DEFAULT NULL,
+  `type` int DEFAULT NULL,
+  `price` double NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `type` FOREIGN KEY (`id`) REFERENCES `item_types` (`item_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+RIDERS:
+CREATE TABLE `riders` (
+  `id` int NOT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `last_order` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+ORDERS:
+CREATE TABLE `orders` (
+  `id` int NOT NULL,
+  `idcustomer` int NOT NULL,
+  `idrider` int NOT NULL,
+  `discountCode` varchar(255) DEFAULT NULL,
+  `price` int NOT NULL,
+  `delivered` BOOLEAN DEFAULT NULL,
+  PRIMARY KEY (`id`,`idcustomer`),
+  KEY `idcustomer_idx` (`idcustomer`),
+  KEY `idrider_idx` (`idrider`),
+  CONSTRAINT `idcustomer` FOREIGN KEY (`idcustomer`) REFERENCES `customers` (`id`),
+  CONSTRAINT `idrider` FOREIGN KEY (`idrider`) REFERENCES `riders` (`id`)
+) ;
+
+CREATE TABLE `orders_to_customers` (
+  `idcustomer` int NOT NULL,
+  `idorder` int NOT NULL,
+  `idrider` int NOT NULL,
+  PRIMARY KEY (`idcustomer`,`idorder`,`idrider`),
+  KEY `idorder_idx` (`idorder`),
+  KEY `idrider_idx` (`idrider`),
+  CONSTRAINT `customer` FOREIGN KEY (`idcustomer`) REFERENCES `customers` (`id`),
+  CONSTRAINT `order` FOREIGN KEY (`idorder`) REFERENCES `orders` (`id`),
+  CONSTRAINT `rider` FOREIGN KEY (`idrider`) REFERENCES `riders` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+
+

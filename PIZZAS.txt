@@ -1,0 +1,92 @@
+INGREDIENTS:
+
+1  pomodoro			1
+2  mozzarella			2
+3  prosciutto			3
+4  funghi				3
+5  salame piccante		4
+6  tonno				2
+7  cipolla				1
+8  mortadella			4
+9  pistacchi			5
+10 burrata				5
+11 salsiccia			4
+12 friarielli			3
+13 origano				2
+14 speck				3
+15 brie				3
+16 olive				3
+17 verdure grigliate		2
+18 gorgonzola			3
+19 fontina				3
+20 pinoli				1
+21 pesto				2
+22 patate				2
+
+
+PIZZAS
+
+1  marinara				V
+2  margherita				X
+3  prosciutto e funghi		X
+4  4 formaggi				X
+5  diavola					X
+6  ligure					V
+7  salsiccia e friarielli		X
+8  vegetariana				V
+9  tonno e cipolla			X
+10 speck e brie				X
+11 mortadella e pistacchi		X
+
+PIZZA HAS INGREDIENT
+
+1	1
+1	13
+1	16
+2	1
+2	2
+3	1
+3	2
+3	3
+3	4
+4	2
+4	18
+4	19
+4	10
+5	1
+5	2
+5	5
+6	1
+6	20
+6	21
+6	22
+7	1
+7	2
+7	11
+7	12
+8	1
+8	16
+8	17
+8	20
+9	1
+9	2
+9	6
+9	7
+10	1
+10	2
+10	14
+10	15
+11	1
+11	10
+11	8
+11	9
+
+
+
+
+
+
+
+
+
+
