@@ -70,9 +70,9 @@ ALTER TABLE `drinks` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
 
 ALTER TABLE `desserts` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
 
-ALTER TABLE `pizzas` ADD FOREIGN KEY (`name`) REFERENCES `menuitems` (`id`);
+ALTER TABLE `pizzas` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
 
-ALTER TABLE `riders` ADD FOREIGN KEY (`id`) REFERENCES `orders` (`idrider`);
+ALTER TABLE `orders` ADD FOREIGN KEY (`idrider`) REFERENCES `riders` (`id`);
 
 CREATE TABLE `customers_orders` (
   `customers_id` int,
