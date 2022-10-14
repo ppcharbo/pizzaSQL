@@ -12,7 +12,6 @@ CREATE TABLE `drinks` (
 
 CREATE TABLE `ingredients` (
   `id` int PRIMARY KEY NOT NULL,
-  `id_pizza` int NOT NULL,
   `name` varchar(25) DEFAULT NULL,
   `price` double NOT NULL,
   `veggie` tinyint NOT NULL
@@ -58,22 +57,9 @@ CREATE TABLE `orders` (
 
 CREATE TABLE `pizzas_ingredients` (
   `pizzas_id` int,
-  `ingredients_id_pizza` int,
-  PRIMARY KEY (`pizzas_id`, `ingredients_id_pizza`)
+  `ingredients_id` int,
+  PRIMARY KEY (`pizzas_id`, `ingredients_id`)
 );
-
-ALTER TABLE `pizzas_ingredients` ADD FOREIGN KEY (`pizzas_id`) REFERENCES `pizzas` (`id`);
-
-ALTER TABLE `pizzas_ingredients` ADD FOREIGN KEY (`ingredients_id_pizza`) REFERENCES `ingredients` (`id_pizza`);
-
-
-ALTER TABLE `drinks` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
-
-ALTER TABLE `desserts` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
-
-ALTER TABLE `pizzas` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
-
-ALTER TABLE `orders` ADD FOREIGN KEY (`idrider`) REFERENCES `riders` (`id`);
 
 CREATE TABLE `customers_orders` (
   `customers_id` int,
@@ -81,7 +67,5 @@ CREATE TABLE `customers_orders` (
   PRIMARY KEY (`customers_id`, `orders_id`)
 );
 
-ALTER TABLE `customers_orders` ADD FOREIGN KEY (`customers_id`) REFERENCES `customers` (`id`);
 
-ALTER TABLE `customers_orders` ADD FOREIGN KEY (`orders_id`) REFERENCES `orders` (`id`);
 

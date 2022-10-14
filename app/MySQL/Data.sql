@@ -22,6 +22,8 @@ insert into ingredients(id, name,price, veggie) values ('21','pesto','200', '1')
 insert into ingredients(id, name,price, veggie) values ('22','patate','200', '1');
 
 
+
+
 insert into pizzas(id, name) values ('1','marinara');
 insert into pizzas(id, name) values ('2','margherita');
 insert into pizzas(id, name) values ('3','prosciutto e funghi');
@@ -76,5 +78,3 @@ insert into pizzas_ingredients(pizza_id,ingredient_id) values ('11','1');
 insert into pizzas_ingredients(pizza_id,ingredient_id) values ('11','10');
 insert into pizzas_ingredients(pizza_id,ingredient_id) values ('11','8');
 insert into pizzas_ingredients(pizza_id,ingredient_id) values ('11','9');
-
-
