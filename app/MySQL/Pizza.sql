@@ -12,6 +12,7 @@ CREATE TABLE `drinks` (
 
 CREATE TABLE `ingredients` (
   `id` int PRIMARY KEY NOT NULL,
+  `id_pizza` int NOT NULL,
   `name` varchar(25) DEFAULT NULL,
   `price` double NOT NULL,
   `veggie` tinyint NOT NULL
@@ -57,13 +58,13 @@ CREATE TABLE `orders` (
 
 CREATE TABLE `pizzas_ingredients` (
   `pizzas_id` int,
-  `ingredients_id` int,
-  PRIMARY KEY (`pizzas_id`, `ingredients_id`)
+  `ingredients_id_pizza` int,
+  PRIMARY KEY (`pizzas_id`, `ingredients_id_pizza`)
 );
 
 ALTER TABLE `pizzas_ingredients` ADD FOREIGN KEY (`pizzas_id`) REFERENCES `pizzas` (`id`);
 
-ALTER TABLE `pizzas_ingredients` ADD FOREIGN KEY (`ingredients_id`) REFERENCES `ingredients` (`id`);
+ALTER TABLE `pizzas_ingredients` ADD FOREIGN KEY (`ingredients_id_pizza`) REFERENCES `ingredients` (`id_pizza`);
 
 
 ALTER TABLE `drinks` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
