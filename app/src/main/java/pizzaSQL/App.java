@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class App {
-	public static String list_pizzasSQL = "SELECT id, name FROM pizza ";
+	public static String list_pizzasSQL = "SELECT id, name FROM pizzas ";
 	public static String ADD_CUSTOMER = "insert into customers(name,phone,address,postal_code) values (?,?,?,?);";
 	public static String getIngredient = "SELECT ingredient,price  FROM ingredient   INNER JOIN pizza_ingredient  ON pizza_ingredient.ingredient_id = ingredient.id  WHERE pizza_ingredient.pizza_id = ?;";
 	public Connection conn;
@@ -148,7 +148,8 @@ public class App {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			String url = "jdbc:mysql://127.0.0.1/pizza";
 			String user = "root";
-			String password = "tyghbn";
+			//String password = "tyghbn";
+			String password = "dio";
 
 			conn = DriverManager.getConnection(url, user, password);
 		} catch (SQLException ex) {
