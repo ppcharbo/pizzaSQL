@@ -1,25 +1,25 @@
-insert into ingredients(id, name,price, veggie) values ('1','pomodoro','100', '0');
-insert into ingredients(id, name,price, veggie) values ('2','mozzarella','200', '0');
+insert into ingredients(id, name,price, veggie) values ('1','pomodoro','100', '1');
+insert into ingredients(id, name,price, veggie) values ('2','mozzarella','200', '1');
 insert into ingredients(id, name,price, veggie) values ('3','prosciutto','300', '0');
-insert into ingredients(id, name,price, veggie) values ('4','funghi','300', '0');
+insert into ingredients(id, name,price, veggie) values ('4','funghi','300', '1');
 insert into ingredients(id, name,price, veggie) values ('5','salame piccante','400', '0');
 insert into ingredients(id, name,price, veggie) values ('6','tonno','200', '0');
-insert into ingredients(id, name,price, veggie) values ('7','cipolla','100', '0');
+insert into ingredients(id, name,price, veggie) values ('7','cipolla','100', '1');
 insert into ingredients(id, name,price, veggie) values ('8','mortadella','400', '0');
-insert into ingredients(id, name,price, veggie) values ('9','pistacchi','500', '0');
-insert into ingredients(id, name,price, veggie) values ('10','burrata','500', '0');
+insert into ingredients(id, name,price, veggie) values ('9','pistacchi','500', '1');
+insert into ingredients(id, name,price, veggie) values ('10','burrata','500', '1');
 insert into ingredients(id, name,price, veggie) values ('11','salsiccia','400', '0');
-insert into ingredients(id, name,price, veggie) values ('12','friarielli','300', '0');
-insert into ingredients(id, name,price, veggie) values ('13','origano','200', '0');
+insert into ingredients(id, name,price, veggie) values ('12','friarielli','300', '1');
+insert into ingredients(id, name,price, veggie) values ('13','origano','200', '1');
 insert into ingredients(id, name,price, veggie) values ('14','speck','300', '0');
-insert into ingredients(id, name,price, veggie) values ('15','brie','300', '0');
-insert into ingredients(id, name,price, veggie) values ('16','olive','300', '0');
-insert into ingredients(id, name,price, veggie) values ('17','verdure grigliate','200', '0');
-insert into ingredients(id, name,price, veggie) values ('18','gorgonzola','300', '0');
-insert into ingredients(id, name,price, veggie) values ('19','fontina','300', '0');
-insert into ingredients(id, name,price, veggie) values ('20','pinoli','100', '0');
-insert into ingredients(id, name,price, veggie) values ('21','pesto','200', '0');
-insert into ingredients(id, name,price, veggie) values ('22','patate','200', '0');
+insert into ingredients(id, name,price, veggie) values ('15','brie','300', '1');
+insert into ingredients(id, name,price, veggie) values ('16','olive','300', '1');
+insert into ingredients(id, name,price, veggie) values ('17','verdure grigliate','200', '1');
+insert into ingredients(id, name,price, veggie) values ('18','gorgonzola','300', '1');
+insert into ingredients(id, name,price, veggie) values ('19','fontina','300', '1');
+insert into ingredients(id, name,price, veggie) values ('20','pinoli','100', '1');
+insert into ingredients(id, name,price, veggie) values ('21','pesto','200', '1');
+insert into ingredients(id, name,price, veggie) values ('22','patate','200', '1');
 
 
 insert into pizzas(id, name) values ('1','marinara');
@@ -76,5 +76,5 @@ insert into pizzas_ingredients(pizza_id,ingredient_id) values ('11','1');
 insert into pizzas_ingredients(pizza_id,ingredient_id) values ('11','10');
 insert into pizzas_ingredients(pizza_id,ingredient_id) values ('11','8');
 insert into pizzas_ingredients(pizza_id,ingredient_id) values ('11','9');
-s
+
 
