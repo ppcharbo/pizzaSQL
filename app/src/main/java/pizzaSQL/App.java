@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class App {
 	public static String list_pizzasSQL = "SELECT id, name FROM pizzas ";
 	public static String ADD_CUSTOMER = "insert into customers(name,phone,address,postal_code) values (?,?,?,?);";
-	public static String getIngredient = "SELECT ingredient,price  FROM ingredient   INNER JOIN pizza_ingredient  ON pizza_ingredient.ingredient_id = ingredient.id  WHERE pizza_ingredient.pizza_id = ?;";
+	public static String getIngredient = "SELECT name,price  FROM ingredients  INNER JOIN pizzas_ingredients  ON pizzas_ingredients.ingredients_id = ingredient.id  WHERE pizzas_ingredient.pizza_id = ?;";
 	public Connection conn;
 
 	public void mainLoop() throws Exception {
