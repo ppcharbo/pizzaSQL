@@ -1,5 +1,5 @@
 CREATE TABLE `items_type` (
-  `id` int NOT NULL,
+  `id` int PRIMARY KEY NOT NULL,
   `type` varchar(45) DEFAULT NULL
 );
 
@@ -12,6 +12,7 @@ CREATE TABLE `ingredients` (
 
 CREATE TABLE `items` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `items_type_id` int,
   `name` varchar(25) DEFAULT NULL,
   `price` double
 );
@@ -43,9 +44,7 @@ CREATE TABLE `orders` (
   PRIMARY KEY (`id`, `idcustomer`, `discount_code`)
 );
 
-ALTER TABLE `ingredients` ADD FOREIGN KEY (`id`) REFERENCES `items` (`id`);
-
-ALTER TABLE `items_type` ADD FOREIGN KEY (`id`) REFERENCES `items` (`id`);
+ALTER TABLE `items` ADD FOREIGN KEY (`items_type_id`) REFERENCES `items_type` (`id`);
 
 CREATE TABLE `orders_items` (
   `orders_id` int,
@@ -69,4 +68,15 @@ CREATE TABLE `customers_orders` (
 ALTER TABLE `customers_orders` ADD FOREIGN KEY (`customers_id`) REFERENCES `customers` (`id`);
 
 ALTER TABLE `customers_orders` ADD FOREIGN KEY (`orders_id`) REFERENCES `orders` (`id`);
+
+
+CREATE TABLE `items_ingredients` (
+  `items_id` int,
+  `ingredients_id` int,
+  PRIMARY KEY (`items_id`, `ingredients_id`)
+);
+
+ALTER TABLE `items_ingredients` ADD FOREIGN KEY (`items_id`) REFERENCES `items` (`id`);
+
+ALTER TABLE `items_ingredients` ADD FOREIGN KEY (`ingredients_id`) REFERENCES `ingredients` (`id`);
 

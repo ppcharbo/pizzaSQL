@@ -1,10 +1,8 @@
 Table "items_type" {
-  "id" int [not null]
+  "id" int [pk, not null]
   "type" varchar(45) [default: NULL]
  
 }
-
-
 
 Table "ingredients" {
   "id" int [pk, not null]
@@ -15,6 +13,7 @@ Table "ingredients" {
 
 Table "items" {
   "id" int [pk, not null, increment]
+   "items_type_id" int [ref: > items_type.id ]
   "name" varchar(25) [default: NULL]
   "price" double 
 }
@@ -26,8 +25,6 @@ Table "customers" {
   "phone" varchar(45) [default: NULL]
   "passwd" varchar(45) [not null]
 }
-
-
 
 Table "riders" {
   "id" int [pk, not null]
@@ -47,10 +44,11 @@ Table "orders" {
   "discount_code" varchar(10) [pk]
 }
 
-Ref: items.id < ingredients.id
-Ref: items.id - items_type.id
-
 Ref: orders.id <> items.id
 
 Ref: orders.idrider > riders.id
 Ref: customers.id <> orders.id
+Ref: items.id <> ingredients.id
+
+
+

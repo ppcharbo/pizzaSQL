@@ -1,0 +1,6 @@
+use mysql;
+drop database pizza ;
+create database pizza ;
+use pizza;
+source ~/MyProjects/pizzaSQL/app/MySQL/Tables.sql
+source ~/MyProjects/pizzaSQL/app/MySQL/Data.sql
