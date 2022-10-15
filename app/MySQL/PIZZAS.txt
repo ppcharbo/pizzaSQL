@@ -1,14 +1,10 @@
-Table "desserts" {
-  "id" int [pk, not null]
-  "name" varchar(25) [default: NULL]
-  "price" double [not null]
+Table "items_type" {
+  "id" int [not null]
+  "type" varchar(45) [default: NULL]
+ 
 }
 
-Table "drinks" {
-  "id" int [pk, not null]
-  "name" varchar(25) [default: NULL]
-  "price" double [not null]
-}
+
 
 Table "ingredients" {
   "id" int [pk, not null]
@@ -17,9 +13,10 @@ Table "ingredients" {
   "veggie" tinyint [not null]
 }
 
-Table "pizzas" {
+Table "items" {
   "id" int [pk, not null, increment]
   "name" varchar(25) [default: NULL]
+  "price" double 
 }
 
 Table "customers" {
@@ -30,10 +27,7 @@ Table "customers" {
   "passwd" varchar(45) [not null]
 }
 
-Table "orderItems" {
-  "id" int [not null]
-  "name" varchar(25) [default: NULL]
-}
+
 
 Table "riders" {
   "id" int [pk, not null]
@@ -53,10 +47,10 @@ Table "orders" {
   "discount_code" varchar(10) [pk]
 }
 
-Ref: pizzas.id <> ingredients.id
-Ref: orderItems.id < drinks.id
-Ref: orders.id < orderItems.id
-Ref: orderItems.id < desserts.id
-Ref: orderItems.id < pizzas.id
+Ref: items.id < ingredients.id
+Ref: items.id - items_type.id
+
+Ref: orders.id <> items.id
+
 Ref: orders.idrider > riders.id
 Ref: customers.id <> orders.id
