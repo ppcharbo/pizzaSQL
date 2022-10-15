@@ -3,46 +3,143 @@
  */
 package pizzaSQL;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Scanner;
 
 public class App {
-	public static String list_pizzasSQL = "SELECT id, name FROM pizzas ";
-	public static String ADD_CUSTOMER = "insert into customers(name,phone,address,postal_code) values (?,?,?,?);";
-	public static String getIngredient = "SELECT name,price  FROM ingredients  INNER JOIN pizzas_ingredients  ON pizzas_ingredients.ingredients_id = ingredient.id  WHERE pizzas_ingredient.pizza_id = ?;";
+	public static final String listAllCustomersSQL = "SELECT * FROM customers";
+	public static final String list_pizzasSQL = "SELECT id, name FROM items WHERE items_type_id = '1'";
+	public static final String ADD_CUSTOMER = "insert into customers(id,name,postal_code,email,phone,passwd) values (?,?,?,?,?,?);";
+	public static final String getIngredient = "SELECT name,price  FROM ingredients  INNER JOIN pizzas_ingredients  ON pizzas_ingredients.ingredients_id = ingredient.id  WHERE pizzas_ingredient.pizza_id = ?;";
+	public static final String deleteCustomerSQL = "DELETE FROM customers WHERE id =";
 	public Connection conn;
+
+	protected static int currentCustomerId = 0;
 
 	public void mainLoop() throws Exception {
 		conn = makeconnection();
-		while (true) {
-			System.out.println(" ");
-			System.out.println("1 - list all avelable pizza");
-			System.out.println("2 - Make an order ");
-			System.out.println("3 - List of current orders ");
-			System.out.println("4 - List of ingredient of pizza ");
-			System.out.println("5 - Menu of customers ");
-			System.out.println("0 - Exit ");
 
+		loop: while (true) {
+
+			System.out.println(" ");
+			System.out.println("1 - Make an order ");
+			System.out.println("2 - List all available Pizzas");
+			System.out.println("3 - List all available Drinks");
+			System.out.println("4 - List all available Desserts");
+			System.out.println("5 - List of current orders ");
+			System.out.println("6 - Manage Customers");
+			System.out.println("0 - Exit ");
 			Scanner s = new Scanner(System.in);
 			String str = s.nextLine();
-			if (str.equals("1")) {
-				listPizza();
-			} else if (str.equals("2")) {
-				makeOrder();
-			} else if (str.equals("3")) {
-				listOfOrder();
-			} else if (str.equals("4")) {
-				listOfIngredient();
-			} else if (str.equals("5")) {
-				manageCustemer();
-			} else if (str.equals("0")) {
-				break;
+			switch (str) {
+				case "1":
+					makeOrder();
+					break;
+				case "2":
+					listPizza();
+					break;
+				case "3":
+					listDrinks();
+					break;
+				case "4":
+					listDesserts();
+					break;
+				case "5":
+					listOfOrder();
+					break;
+				case "6":
+					manageCustemer();
+					break;
+				case "0":
+					break loop;
 			}
 		}
+	}
+
+	/*
+		FOR PIZZA
+	 */
+	private void listPizza() throws SQLException {
+		System.out.println("inside pizza list methd");
+		java.sql.Statement statement = conn.createStatement();
+
+		ResultSet resultPizza = statement.executeQuery(list_pizzasSQL);
+		while (resultPizza.next()) {
+
+			String nameOfPizza = resultPizza.getString("name");
+			String idOfPizza = resultPizza.getString("id");
+			String veggie = isVeggie(idOfPizza) ? " -- Vegetarian" : "";
+			int price = getPriceOfPizza(idOfPizza);
+			System.out.println("[ Pizza: "+nameOfPizza+" -- Price: "+price+veggie+" ]");
+		}
+
+	}
+	private boolean isVeggie(String id) throws SQLException {
+		java.sql.Statement statement = conn.createStatement();
+		String QRY = "SELECT veggie from items_ingredients JOIN ingredients i " +
+						"on i.id = items_ingredients.ingredients_id  WHERE items_id = '"+id+"'";
+		ResultSet rs = statement.executeQuery(QRY);
+		while (rs.next()) { if (rs.getInt("veggie") == 0) return false; }
+		return true;
+	}
+	private int getPriceOfPizza(String id) throws SQLException {
+		java.sql.Statement statement = conn.createStatement();
+		String QRY = "SELECT price from items_ingredients JOIN ingredients i " +
+					"on i.id = items_ingredients.ingredients_id  WHERE items_id = '"+id+"'";
+		ResultSet rs = statement.executeQuery(QRY);
+		int price = 0;
+		while (rs.next()) { price += rs.getInt("price"); }
+		return price;
+	}
+
+	/*
+		FOR DRINKS
+	 */
+	private void listDrinks() throws Exception {
+		Connection conn = makeconnection();
+		java.sql.Statement statement = conn.createStatement();
+		String QRY = "SELECT name, price FROM items WHERE items_type_id = '2'";
+		ResultSet rs = statement.executeQuery(QRY);
+		while (rs.next()) {
+			String drinkName = rs.getString("name");
+			int price = rs.getInt("price");
+
+			System.out.println("[ Drink: "+drinkName+" -- Price: "+price+" ]");
+		}
+	}
+	/*
+		FOR DESSERTS
+	 */
+	private void listDesserts() throws Exception {
+		Connection conn = makeconnection();
+		java.sql.Statement statement = conn.createStatement();
+		String QRY = "SELECT name, price FROM items WHERE items_type_id = '3'";
+		ResultSet rs = statement.executeQuery(QRY);
+		while (rs.next()) {
+			String drinkName = rs.getString("name");
+			int price = rs.getInt("price");
+
+			System.out.println("[ Desserts: "+drinkName+" -- Price: "+price+" ]");
+		}
+	}
+
+	public Connection makeconnection() throws ClassNotFoundException {
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			String url = "jdbc:mysql://127.0.0.1/pizza";
+			String user = "root";
+			//String password = "tyghbn";
+			String password = "dio";
+
+			conn = DriverManager.getConnection(url, user, password);
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return conn;
 	}
 
 	private void manageCustemer() throws Exception {
@@ -66,13 +163,31 @@ public class App {
 		}
 	}
 
-	private void listAllCustomer() {
+	private void listAllCustomer() throws SQLException {
 		System.out.println("inside listAllCustomer methd");
+
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(listAllCustomersSQL);
+		while (rs.next()) {
+
+			String id = rs.getString("id");
+			String name = rs.getString("name");
+			String email = rs.getString("email");
+			String phone = rs.getString("phone");
+
+			System.out.println("[Customer id: "+id+" Name: "+name+" email: "+email+"Phone num: "+phone);
+		}
 
 	}
 
-	private void deleteCustomer() {
-		System.out.println("inside deleteCustomer methd");
+	private void deleteCustomer() throws SQLException {
+		listAllCustomer();
+		System.out.println("Type the id of a customer to delete: ");
+		Scanner s = new Scanner(System.in);
+		String id = s.nextLine();
+
+		Statement stmt = conn.createStatement();
+		stmt.executeQuery((deleteCustomerSQL+id));
 
 	}
 
@@ -122,44 +237,10 @@ public class App {
 	}
 
 	private void makeOrder() {
-		System.out.println("inside makeorder methd");
+		System.out.println("inside makeOrder methd");
 
 	}
 
-	private void listPizza() throws Exception {
-		System.out.println("inside pizza list methd");
-		Connection conn = makeconnection();
-		java.sql.Statement statement = conn.createStatement();
-
-		ResultSet resultPizza = statement.executeQuery(list_pizzasSQL);
-		while (resultPizza.next()) {
-
-			String nameOfPizza = resultPizza.getString("name");
-			String idOfPizza = resultPizza.getString("id");
-
-			System.out.println(idOfPizza + " " + nameOfPizza);
-		}
-
-	}
-
-	public Connection makeconnection() throws ClassNotFoundException {
-		Connection conn = null;
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			String url = "jdbc:mysql://127.0.0.1/pizza";
-			String user = "root";
-			//String password = "tyghbn";
-			String password = "dio";
-
-			conn = DriverManager.getConnection(url, user, password);
-		} catch (SQLException ex) {
-			// handle any errors
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-		}
-		return conn;
-	}
 
 	public static void main(String[] args) throws Exception {
 		new App().mainLoop();

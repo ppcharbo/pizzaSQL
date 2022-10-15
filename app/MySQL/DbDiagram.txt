@@ -45,7 +45,6 @@ Table "orders" {
 }
 
 Ref: orders.id <> items.id
-
 Ref: orders.idrider > riders.id
 Ref: customers.id <> orders.id
 Ref: items.id <> ingredients.id
