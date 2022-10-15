@@ -17,7 +17,7 @@ public class App {
 	protected static int currentCustomerId = 0;
 
 	public void mainLoop() throws Exception {
-		conn = makeconnection();
+		conn = makeConnection();
 
 		loop: while (true) {
 
@@ -48,7 +48,7 @@ public class App {
 					listOfOrder();
 					break;
 				case "6":
-					manageCustemer();
+					manageCustomer();
 					break;
 				case "0":
 					break loop;
@@ -96,7 +96,6 @@ public class App {
 		FOR DRINKS
 	 */
 	private void listDrinks() throws Exception {
-		Connection conn = makeconnection();
 		java.sql.Statement statement = conn.createStatement();
 		String QRY = "SELECT name, price FROM items WHERE items_type_id = '2'";
 		ResultSet rs = statement.executeQuery(QRY);
@@ -111,7 +110,6 @@ public class App {
 		FOR DESSERTS
 	 */
 	private void listDesserts() throws Exception {
-		Connection conn = makeconnection();
 		java.sql.Statement statement = conn.createStatement();
 		String QRY = "SELECT name, price FROM items WHERE items_type_id = '3'";
 		ResultSet rs = statement.executeQuery(QRY);
@@ -123,7 +121,7 @@ public class App {
 		}
 	}
 
-	public Connection makeconnection() throws ClassNotFoundException {
+	public Connection makeConnection() throws ClassNotFoundException {
 		Connection conn = null;
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -142,23 +140,27 @@ public class App {
 		return conn;
 	}
 
-	private void manageCustemer() throws Exception {
-		while (true) {
-			System.out.println("inside manageCustemer method");
+	private void manageCustomer() throws Exception {
+		loop:while (true) {
+			System.out.println("inside manageCustomer method");
 			System.out.println("1 - Create a new customer");
 			System.out.println("2 - Delete Customer ");
 			System.out.println("3 - List All customers ");
 			System.out.println("0 - Exit ");
 			Scanner s = new Scanner(System.in);
 			String str = s.nextLine();
-			if (str.equals("1")) {
-				newCustomer();
-			} else if (str.equals("2")) {
-				deleteCustomer();
-			} else if (str.equals("3")) {
-				listAllCustomer();
-			} else if (str.equals("0")) {
-				break;
+			switch (str) {
+				case "1":
+					newCustomer();
+					break;
+				case "2":
+					deleteCustomer();
+					break;
+				case "3":
+					listAllCustomer();
+					break;
+				case "0":
+					break loop;
 			}
 		}
 	}
@@ -192,7 +194,7 @@ public class App {
 	}
 
 	private void newCustomer() throws Exception {
-		System.out.println("inside new Custermer methode");
+		System.out.println("inside new Customer methode");
 		System.out.println("insert name ");
 		Scanner s = new Scanner(System.in);
 		String name = s.nextLine();
