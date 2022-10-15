@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="pizzadb@localhost" uuid="ee7c6c9b-9f92-4158-a70e-0d03bb95497a">
+    <data-source source="LOCAL" name="PIZZA@localhost" uuid="972d5bd5-ecf0-4715-be72-8cb755731c64">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
