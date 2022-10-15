@@ -1,0 +1,62 @@
+Table "desserts" {
+  "id" int [pk, not null]
+  "name" varchar(25) [default: NULL]
+  "price" double [not null]
+}
+
+Table "drinks" {
+  "id" int [pk, not null]
+  "name" varchar(25) [default: NULL]
+  "price" double [not null]
+}
+
+Table "ingredients" {
+  "id" int [pk, not null]
+  "name" varchar(25) [default: NULL]
+  "price" double [not null]
+  "veggie" tinyint [not null]
+}
+
+Table "pizzas" {
+  "id" int [pk, not null, increment]
+  "name" varchar(25) [default: NULL]
+}
+
+Table "customers" {
+  "id" int [pk, not null]
+  "name" varchar(45) [default: NULL]
+  "email" varchar(45) [not null]
+  "phone" varchar(45) [default: NULL]
+  "passwd" varchar(45) [not null]
+}
+
+Table "orderItems" {
+  "id" int [not null]
+  "name" varchar(25) [default: NULL]
+}
+
+Table "riders" {
+  "id" int [pk, not null]
+  "name" varchar(45) [default: NULL]
+  "available" tinyint [not null, default: "0"]
+  "postal_code" int [not null]
+}
+
+Table "orders" {
+  "id" int [pk, not null]
+  "idcustomer" int [pk, not null]
+  "idrider" int [not null]
+  "price" double [not null]
+  "ready_at" timestamp [not null]
+  "picked_up_at" timestamp [default: NULL]
+  "delivered" tinyint [default: NULL]
+  "discount_code" varchar(10) [pk]
+}
+
+Ref: pizzas.id <> ingredients.id
+Ref: orderItems.id < drinks.id
+Ref: orders.id < orderItems.id
+Ref: orderItems.id < desserts.id
+Ref: orderItems.id < pizzas.id
+Ref: orders.idrider > riders.id
+Ref: customers.id <> orders.id

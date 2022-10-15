@@ -18,7 +18,7 @@ CREATE TABLE `ingredients` (
 );
 
 CREATE TABLE `pizzas` (
-  `id` int PRIMARY KEY NOT NULL,
+  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `name` varchar(25) DEFAULT NULL
 );
 
@@ -30,8 +30,8 @@ CREATE TABLE `customers` (
   `passwd` varchar(45) NOT NULL
 );
 
-CREATE TABLE `menuitems` (
-  `id` int PRIMARY KEY NOT NULL,
+CREATE TABLE `orderItems` (
+  `id` int NOT NULL,
   `name` varchar(25) DEFAULT NULL
 );
 
@@ -60,24 +60,28 @@ CREATE TABLE `pizzas_ingredients` (
   PRIMARY KEY (`pizzas_id`, `ingredients_id`)
 );
 
+ALTER TABLE `pizzas_ingredients` ADD FOREIGN KEY (`pizzas_id`) REFERENCES `pizzas` (`id`);
+
+ALTER TABLE `pizzas_ingredients` ADD FOREIGN KEY (`ingredients_id`) REFERENCES `ingredients` (`id`);
+
+
+ALTER TABLE `drinks` ADD FOREIGN KEY (`id`) REFERENCES `orderItems` (`id`);
+
+ALTER TABLE `orderItems` ADD FOREIGN KEY (`id`) REFERENCES `orders` (`id`);
+
+ALTER TABLE `desserts` ADD FOREIGN KEY (`id`) REFERENCES `orderItems` (`id`);
+
+ALTER TABLE `pizzas` ADD FOREIGN KEY (`id`) REFERENCES `orderItems` (`id`);
+
+ALTER TABLE `orders` ADD FOREIGN KEY (`idrider`) REFERENCES `riders` (`id`);
+
 CREATE TABLE `customers_orders` (
   `customers_id` int,
   `orders_id` int,
   PRIMARY KEY (`customers_id`, `orders_id`)
 );
 
-ALTER TABLE `pizzas_ingredients` ADD FOREIGN KEY (`pizzas_id`) REFERENCES `pizzas` (`id`);
-
-ALTER TABLE `pizzas_ingredients` ADD FOREIGN KEY (`ingredients_id`) REFERENCES `ingredients` (`id`);
-
-ALTER TABLE `drinks` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
-
-ALTER TABLE `desserts` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
-
-ALTER TABLE `pizzas` ADD FOREIGN KEY (`id`) REFERENCES `menuitems` (`id`);
-
-ALTER TABLE `orders` ADD FOREIGN KEY (`idrider`) REFERENCES `riders` (`id`);
-
 ALTER TABLE `customers_orders` ADD FOREIGN KEY (`customers_id`) REFERENCES `customers` (`id`);
 
 ALTER TABLE `customers_orders` ADD FOREIGN KEY (`orders_id`) REFERENCES `orders` (`id`);
+
