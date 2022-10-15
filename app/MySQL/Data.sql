@@ -22,17 +22,28 @@ insert into ingredients(id, name,price, veggie) values ('21','pesto','200', '1')
 insert into ingredients(id, name,price, veggie) values ('22','patate','200', '1');
 
 
-insert into pizzas(id, name) values ('1','marinara');
-insert into pizzas(id, name) values ('2','margherita');
-insert into pizzas(id, name) values ('3','prosciutto e funghi');
-insert into pizzas(id, name) values ('4','4 formaggi');
-insert into pizzas(id, name) values ('5','diavola');
-insert into pizzas(id, name) values ('6','ligure');
-insert into pizzas(id, name) values ('7','salsiccia e friarielli');
-insert into pizzas(id, name) values ('8','vegetariana');
-insert into pizzas(id, name) values ('9','tonno e cipolla');
-insert into pizzas(id, name) values ('10','speck e brie');
-insert into pizzas(id, name) values ('11','mortadella e pistacchi');
+insert into menuitems(id, name) values ('1','marinara');
+insert into menuitems(id, name) values ('2','margherita');
+insert into menuitems(id, name) values ('3','prosciutto e funghi');
+insert into menuitems(id, name) values ('4','4 formaggi');
+insert into menuitems(id, name) values ('5','diavola');
+insert into menuitems(id, name) values ('6','ligure');
+insert into menuitems(id, name) values ('7','salsiccia e friarielli');
+insert into menuitems(id, name) values ('8','vegetariana');
+insert into menuitems(id, name) values ('9','tonno e cipolla');
+insert into menuitems(id, name) values ('10','speck e brie');
+insert into menuitems(id, name) values ('11','mortadella e pistacchi');
+
+insert into menuitems(id, name) values ('12', 'coca cola');
+insert into menuitems(id, name) values ('13', 'coca cola zero');
+insert into menuitems(id, name) values ('14', 'fanta');
+insert into menuitems(id, name) values ('15', 'sprite');
+insert into menuitems(id, name) values ('16', 'orangina');
+
+insert into menuitems(id, name) values ('17', 'tiramisù');
+insert into menuitems(id, name) values ('18', 'torta alle mele');
+insert into menuitems(id, name) values ('19', 'panna cotta');
+
 
 
 
