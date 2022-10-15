@@ -76,5 +76,3 @@ insert into pizzas_ingredients(pizzas_id,ingredients_id) values ('11','1');
 insert into pizzas_ingredients(pizzas_id,ingredients_id) values ('11','10');
 insert into pizzas_ingredients(pizzas_id,ingredients_id) values ('11','8');
 insert into pizzas_ingredients(pizzas_id,ingredients_id) values ('11','9');
-s
-s
