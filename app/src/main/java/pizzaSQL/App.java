@@ -12,11 +12,14 @@ public class App {
 	public static final String ADD_CUSTOMER = "insert into customers(id,name,postal_code,email,phone,passwd) values (?,?,?,?,?,?);";
 	public static final String getIngredient = "SELECT name,price  FROM ingredients  INNER JOIN pizzas_ingredients  ON pizzas_ingredients.ingredients_id = ingredient.id  WHERE pizzas_ingredient.pizza_id = ?;";
 	public static final String deleteCustomerSQL = "DELETE FROM customers WHERE id =";
+	public static final String listDrinkSQL = "SELECT id,name, price FROM items WHERE items_type_id = '2'";
+	public static final String dessertSQL = "SELECT id,name, price FROM items WHERE items_type_id = '3'";
 	public Connection conn;
 
 	protected static int currentCustomerId = 0;
 
 	public void mainLoop() throws Exception {
+		Scanner s;
 		conn = makeConnection();
 
 		loop: while (true) {
@@ -29,7 +32,7 @@ public class App {
 			System.out.println("5 - List of current orders ");
 			System.out.println("6 - Manage Customers");
 			System.out.println("0 - Exit ");
-			Scanner s = new Scanner(System.in);
+			s = new Scanner(System.in);
 			String str = s.nextLine();
 			switch (str) {
 			case "1":
@@ -53,8 +56,8 @@ public class App {
 			case "0":
 				break loop;
 			}
-			s.close();
 		}
+		s.close();
 
 	}
 
@@ -70,9 +73,9 @@ public class App {
 
 			String nameOfPizza = resultPizza.getString("name");
 			String idOfPizza = resultPizza.getString("id");
-			String veggie = isVeggie(idOfPizza) ? " -- Vegetarian" : "";
-			int price = getPriceOfPizza(idOfPizza);
-			System.out.println("[ Pizza: " + nameOfPizza + " -- Price: " + price + veggie + " ]");
+			String veggie = isVeggie(idOfPizza) ? "yes" : "no";
+			int price = getPriceOfPizza(idOfPizza) / 100;
+			System.out.printf("%2s - %-25s veggie: %-3s price %4s € \n" + "", idOfPizza, nameOfPizza, veggie, price);
 		}
 
 	}
@@ -104,13 +107,13 @@ public class App {
 	 */
 	private void listDrinks() throws Exception {
 		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT name, price FROM items WHERE items_type_id = '2'";
-		ResultSet rs = statement.executeQuery(QRY);
+		ResultSet rs = statement.executeQuery(listDrinkSQL);
 		while (rs.next()) {
+			int id = rs.getInt("id");
 			String drinkName = rs.getString("name");
 			int price = rs.getInt("price");
 
-			System.out.println("[ Drink: " + drinkName + " -- Price: " + price + " ]");
+			System.out.printf("%2s - %-17s  price %4s € \n", id, drinkName, price);
 		}
 	}
 
@@ -119,13 +122,14 @@ public class App {
 	 */
 	private void listDesserts() throws Exception {
 		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT name, price FROM items WHERE items_type_id = '3'";
-		ResultSet rs = statement.executeQuery(QRY);
+		ResultSet rs = statement.executeQuery(dessertSQL);
 		while (rs.next()) {
-			String drinkName = rs.getString("name");
+			int id = rs.getInt("id");
+			String dessertName = rs.getString("name");
 			int price = rs.getInt("price");
 
-			System.out.println("[ Desserts: " + drinkName + " -- Price: " + price + " ]");
+			System.out.printf("%2s - %-15s  price %4s € \n", id, dessertName, price);
+	
 		}
 	}
 
@@ -149,13 +153,14 @@ public class App {
 	}
 
 	private void manageCustomer() throws Exception {
+		Scanner s;
 		loop: while (true) {
 			System.out.println("inside manageCustomer method");
 			System.out.println("1 - Create a new customer");
 			System.out.println("2 - Delete Customer ");
 			System.out.println("3 - List All customers ");
 			System.out.println("0 - Exit ");
-			Scanner s = new Scanner(System.in);
+			s = new Scanner(System.in);
 			String str = s.nextLine();
 			switch (str) {
 			case "1":
@@ -170,8 +175,8 @@ public class App {
 			case "0":
 				break loop;
 			}
-			s.close();
 		}
+		s.close();
 	}
 
 	private void listAllCustomer() throws SQLException {
@@ -227,8 +232,7 @@ public class App {
 	private void listOfIngredient() throws Exception {
 		System.out.println("inside listOfIngredient methd");
 		System.out.println("what pizza's information do you want ?");
-		
-	
+
 		System.out.println("inside pizza list methd");
 
 		java.sql.Statement statement = conn.createStatement();
