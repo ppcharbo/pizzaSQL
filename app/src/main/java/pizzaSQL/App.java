@@ -27,8 +27,8 @@ public class App {
 	public static final String deleteCustomerSQL = "DELETE FROM customers WHERE id =";
 	public static final String listDrinkSQL = "SELECT id,name, price FROM items WHERE items_type_id = '2'";
 	public static final String dessertSQL = "SELECT id,name, price FROM items WHERE items_type_id = '3'";
-	public static final String isVeggieSQL = "SELECT veggie from items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id  WHERE items_id = ?'";
-	public static final String priceIngredientSQL = "SELECT price from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?'";
+	public static final String isVeggieSQL = "SELECT veggie from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?";
+	public static final String priceIngredientSQL = "SELECT price from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?";
 	protected static String customerId = "";
 	protected static String customerEmail = "";
 	protected static String customerPhone = "";
@@ -118,7 +118,8 @@ public class App {
 
 		PreparedStatement statement = conn.prepareStatement(isVeggieSQL);
 		statement.setString(1, id);
-		ResultSet rs = statement.executeQuery(isVeggieSQL);
+
+		ResultSet rs = statement.executeQuery();
 		while (rs.next()) {
 			if (rs.getInt("veggie") == 0)
 				return false;
@@ -127,8 +128,10 @@ public class App {
 	}
 
 	private int getPriceOfIngredients(String id) throws SQLException {
-		java.sql.Statement statement = conn.createStatement();
-		ResultSet rs = statement.executeQuery(priceIngredientSQL);
+		PreparedStatement statement = conn.prepareStatement(priceIngredientSQL);
+		statement.setString(1, id);
+		ResultSet rs = statement.executeQuery();
+
 		int price = 0;
 		while (rs.next()) {
 			price += rs.getInt("price");
