@@ -32,32 +32,34 @@ public class App {
 			Scanner s = new Scanner(System.in);
 			String str = s.nextLine();
 			switch (str) {
-				case "1":
-					makeOrder();
-					break;
-				case "2":
-					listPizza();
-					break;
-				case "3":
-					listDrinks();
-					break;
-				case "4":
-					listDesserts();
-					break;
-				case "5":
-					listOfOrder();
-					break;
-				case "6":
-					manageCustomer();
-					break;
-				case "0":
-					break loop;
+			case "1":
+				makeOrder();
+				break;
+			case "2":
+				listPizza();
+				break;
+			case "3":
+				listDrinks();
+				break;
+			case "4":
+				listDesserts();
+				break;
+			case "5":
+				listOfOrder();
+				break;
+			case "6":
+				manageCustomer();
+				break;
+			case "0":
+				break loop;
 			}
+			s.close();
 		}
+
 	}
 
 	/*
-		FOR PIZZA
+	 * FOR PIZZA
 	 */
 	private void listPizza() throws SQLException {
 		System.out.println("inside pizza list methd");
@@ -70,30 +72,35 @@ public class App {
 			String idOfPizza = resultPizza.getString("id");
 			String veggie = isVeggie(idOfPizza) ? " -- Vegetarian" : "";
 			int price = getPriceOfPizza(idOfPizza);
-			System.out.println("[ Pizza: "+nameOfPizza+" -- Price: "+price+veggie+" ]");
+			System.out.println("[ Pizza: " + nameOfPizza + " -- Price: " + price + veggie + " ]");
 		}
 
 	}
+
 	private boolean isVeggie(String id) throws SQLException {
 		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT veggie from items_ingredients JOIN ingredients i " +
-						"on i.id = items_ingredients.ingredients_id  WHERE items_id = '"+id+"'";
+		String QRY = "SELECT veggie from items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id  WHERE items_id = '" + id + "'";
 		ResultSet rs = statement.executeQuery(QRY);
-		while (rs.next()) { if (rs.getInt("veggie") == 0) return false; }
+		while (rs.next()) {
+			if (rs.getInt("veggie") == 0)
+				return false;
+		}
 		return true;
 	}
+
 	private int getPriceOfPizza(String id) throws SQLException {
 		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT price from items_ingredients JOIN ingredients i " +
-					"on i.id = items_ingredients.ingredients_id  WHERE items_id = '"+id+"'";
+		String QRY = "SELECT price from items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id  WHERE items_id = '" + id + "'";
 		ResultSet rs = statement.executeQuery(QRY);
 		int price = 0;
-		while (rs.next()) { price += rs.getInt("price"); }
+		while (rs.next()) {
+			price += rs.getInt("price");
+		}
 		return price;
 	}
 
 	/*
-		FOR DRINKS
+	 * FOR DRINKS
 	 */
 	private void listDrinks() throws Exception {
 		java.sql.Statement statement = conn.createStatement();
@@ -103,11 +110,12 @@ public class App {
 			String drinkName = rs.getString("name");
 			int price = rs.getInt("price");
 
-			System.out.println("[ Drink: "+drinkName+" -- Price: "+price+" ]");
+			System.out.println("[ Drink: " + drinkName + " -- Price: " + price + " ]");
 		}
 	}
+
 	/*
-		FOR DESSERTS
+	 * FOR DESSERTS
 	 */
 	private void listDesserts() throws Exception {
 		java.sql.Statement statement = conn.createStatement();
@@ -117,7 +125,7 @@ public class App {
 			String drinkName = rs.getString("name");
 			int price = rs.getInt("price");
 
-			System.out.println("[ Desserts: "+drinkName+" -- Price: "+price+" ]");
+			System.out.println("[ Desserts: " + drinkName + " -- Price: " + price + " ]");
 		}
 	}
 
@@ -127,7 +135,7 @@ public class App {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			String url = "jdbc:mysql://127.0.0.1/pizza";
 			String user = "root";
-			//String password = "tyghbn";
+			// String password = "tyghbn";
 			String password = "dio";
 
 			conn = DriverManager.getConnection(url, user, password);
@@ -141,7 +149,7 @@ public class App {
 	}
 
 	private void manageCustomer() throws Exception {
-		loop:while (true) {
+		loop: while (true) {
 			System.out.println("inside manageCustomer method");
 			System.out.println("1 - Create a new customer");
 			System.out.println("2 - Delete Customer ");
@@ -150,18 +158,19 @@ public class App {
 			Scanner s = new Scanner(System.in);
 			String str = s.nextLine();
 			switch (str) {
-				case "1":
-					newCustomer();
-					break;
-				case "2":
-					deleteCustomer();
-					break;
-				case "3":
-					listAllCustomer();
-					break;
-				case "0":
-					break loop;
+			case "1":
+				newCustomer();
+				break;
+			case "2":
+				deleteCustomer();
+				break;
+			case "3":
+				listAllCustomer();
+				break;
+			case "0":
+				break loop;
 			}
+			s.close();
 		}
 	}
 
@@ -177,7 +186,7 @@ public class App {
 			String email = rs.getString("email");
 			String phone = rs.getString("phone");
 
-			System.out.println("[Customer id: "+id+" Name: "+name+" email: "+email+"Phone num: "+phone);
+			System.out.println("[Customer id: " + id + " Name: " + name + " email: " + email + "Phone num: " + phone);
 		}
 
 	}
@@ -187,9 +196,9 @@ public class App {
 		System.out.println("Type the id of a customer to delete: ");
 		Scanner s = new Scanner(System.in);
 		String id = s.nextLine();
-
+		s.close();
 		Statement stmt = conn.createStatement();
-		stmt.executeQuery((deleteCustomerSQL+id));
+		stmt.executeQuery((deleteCustomerSQL + id));
 
 	}
 
@@ -204,6 +213,7 @@ public class App {
 		String address = s.nextLine();
 		System.out.println("insert postal code ");
 		String postalCode = s.nextLine();
+		s.close();
 		PreparedStatement prepareStatement = conn.prepareStatement(ADD_CUSTOMER);
 
 		prepareStatement.setString(1, name);
@@ -217,8 +227,8 @@ public class App {
 	private void listOfIngredient() throws Exception {
 		System.out.println("inside listOfIngredient methd");
 		System.out.println("what pizza's information do you want ?");
-		Scanner s = new Scanner(System.in);
-		String str = s.nextLine();
+		
+	
 		System.out.println("inside pizza list methd");
 
 		java.sql.Statement statement = conn.createStatement();
@@ -242,7 +252,6 @@ public class App {
 		System.out.println("inside makeOrder methd");
 
 	}
-
 
 	public static void main(String[] args) throws Exception {
 		new App().mainLoop();

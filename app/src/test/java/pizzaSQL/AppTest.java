@@ -9,11 +9,12 @@ import static org.junit.Assert.*;
 import java.sql.Connection;
 
 public class AppTest {
-    @Test public void testAppHasAGreeting() throws Exception {
-        App app = new App();
-        
-        Connection conn = app.makeconnection();
-        
-        assertNotNull(conn);
-        }
+	@Test
+	public void testAppHasAGreeting() throws Exception {
+		App app = new App();
+
+		Connection conn = app.makeConnection();
+
+		assertNotNull(conn);
+	}
 }
