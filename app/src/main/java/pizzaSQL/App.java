@@ -195,21 +195,22 @@ public class App {
 			System.out.println("2 - Delete Customer ");
 			System.out.println("3 - List All customers ");
 			System.out.println("0 - Exit ");
-			s = new Scanner(System.in);
+			s= new Scanner(System.in);
 			String str = s.nextLine();
 			switch (str) {
 			case "1":
-				newCustomer();
+				newCustomer(s);
 				break;
 			case "2":
 				deleteCustomer();
 				break;
 			case "3":
 				listAllCustomer();
-				break;
+		 		break;
 			case "0":
-				break loop;
+			    break loop;
 			}
+			
 		}
 		s.close();
 	}
@@ -243,10 +244,10 @@ public class App {
 
 	}
 
-	private void newCustomer() throws SQLException {
+	private void newCustomer(Scanner s) throws SQLException {
 		System.out.println("inside new Customer methode");
 		System.out.println("insert name ");
-		Scanner s = new Scanner(System.in);
+		
 		String name = s.nextLine();
 		System.out.println("insert postal code ");
 		String postalCode = s.nextLine();
@@ -258,7 +259,7 @@ public class App {
 		String phone = s.nextLine();
 		System.out.println("insert a password ");
 		String password = s.nextLine();
-		s.close();
+		
 
 		createCustomer(conn, name, postalCode, address, email, phone, password);
 
