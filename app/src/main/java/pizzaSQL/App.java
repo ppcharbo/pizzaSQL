@@ -76,7 +76,7 @@ public class App {
 			String idOfPizza = resultPizza.getString("id");
 			String veggie = isVeggie(idOfPizza) ? " -- Vegetarian" : "";
 			int price = getPriceOfPizza(idOfPizza);
-			System.out.println("[ Pizza: "+nameOfPizza+" -- Price: "+price+veggie+" ]");
+			System.out.println("[ Pizza: "+nameOfPizza+" -- Price: "+price+veggie+"--ID: "+idOfPizza+" ]");
 			System.out.println("<INGREDIENTS:"+getIngredientOfPizza(idOfPizza));
 		}
 
@@ -115,13 +115,13 @@ public class App {
 	private void listDrinks() throws SQLException {
 		System.out.println("\n");
 		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT name, price FROM items WHERE items_type_id = '2'";
+		String QRY = "SELECT id name, price FROM items WHERE items_type_id = '2'";
 		ResultSet rs = statement.executeQuery(QRY);
 		while (rs.next()) {
 			String drinkName = rs.getString("name");
 			int price = rs.getInt("price");
-
-			System.out.println("[ Drink: "+drinkName+" -- Price: "+price+" ]");
+			int id = rs.getInt("id");
+			System.out.println("[ Drink: "+drinkName+" -- Price: "+price+"-- ID: "+id+ " ]");
 		}
 	}
 	/*
@@ -130,13 +130,13 @@ public class App {
 	private void listDesserts() throws SQLException {
 		System.out.println("\n");
 		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT name, price FROM items WHERE items_type_id = '3'";
+		String QRY = "SELECT id name, price FROM items WHERE items_type_id = '3'";
 		ResultSet rs = statement.executeQuery(QRY);
 		while (rs.next()) {
-			String drinkName = rs.getString("name");
+			String dessertName = rs.getString("name");
 			int price = rs.getInt("price");
-
-			System.out.println("[ Desserts: "+drinkName+" -- Price: "+price+" ]");
+			int id = rs.getInt("id");
+			System.out.println("[ Desserts: "+dessertName+" -- Price: "+price+"-- ID: "+id+ " ]");
 		}
 	}
 
@@ -233,8 +233,10 @@ public class App {
 
 	}
 
-	private void makeOrder() {
+	private void makeOrder() throws SQLException{
 		System.out.println("inside makeOrder methd");
+		listPizza();
+		listDrinks();
 
 	}
 
