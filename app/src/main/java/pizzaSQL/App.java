@@ -82,9 +82,10 @@ public class App {
 
 			String nameOfPizza = resultPizza.getString("name");
 			String idOfPizza = resultPizza.getString("id");
-			String veggie = isVeggie(idOfPizza) ? "yes" : "no";
-			int price = getListPizza(idOfPizza) / 100;
-			System.out.printf("%2s - %-25s veggie: %-3s price %4s € \n" + "", idOfPizza, nameOfPizza, veggie, price);
+			String veggie = isVeggie(idOfPizza) ? " -- Vegetarian" : "";
+			double price = (double) getPriceOfPizza(idOfPizza)/100;
+			System.out.println("[ Pizza: "+nameOfPizza+" -- Price:€"+price+veggie+"--ID: "+idOfPizza+" ]");
+			System.out.println("<INGREDIENTS:"+getIngredientOfPizza(idOfPizza));
 		}
 
 	}
@@ -117,7 +118,7 @@ public class App {
 			String drinkName = rs.getString("name");
 			double price = (double) rs.getInt("price")/100;
 			int id = rs.getInt("id");
-			System.out.println("[ Drink: "+drinkName+" -- Price: "+price+"-- ID: "+id+ " ]");
+			System.out.println("[ Drink: "+drinkName+" -- Price:€"+price+"-- ID: "+id+ " ]");
 		}
 	}
 	/*
@@ -129,10 +130,9 @@ public class App {
 		ResultSet rs = statement.executeQuery(QRY);
 		while (rs.next()) {
 			String dessertName = rs.getString("name");
-			int price = rs.getInt("price");
-
-			System.out.printf("%2s - %-15s  price %4s € \n", id, dessertName, price);
-
+			double price = (double) rs.getInt("price")/100;
+			int id = rs.getInt("id");
+			System.out.println("[ Desserts: "+dessertName+" -- Price:€"+price+"-- ID: "+id+ " ]");
 		}
 	}
 
