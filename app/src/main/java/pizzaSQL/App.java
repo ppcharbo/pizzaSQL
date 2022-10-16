@@ -93,7 +93,10 @@ public class App {
 			String idOfPizza = resultPizza.getString("id");
 			String veggie = isVeggie(idOfPizza) ? "yes" : "no";
 			double price = getPriceOfIngredients(idOfPizza) / 100;
-			price=price*1.4;
+//			margin for profit so we have to multiply ..
+			price = price * 1.4;
+//			VAT 9%  so we have to multiply ..
+			price = price * 1.09;
 			String ingredientOfPizza = getIngredientOfPizza(idOfPizza);
 			System.out.printf("%-25s veggie : %-3s price : %3.2f € (%s) \n", nameOfPizza, veggie, price, ingredientOfPizza);
 
@@ -164,9 +167,12 @@ public class App {
 		while (rs.next()) {
 
 			String drinkName = rs.getString("name");
-			int price = rs.getInt("price");
-
-			System.out.printf("%-17s  price : %4d € \n", drinkName, price);
+			double price = rs.getInt("price");
+//			margin for profit so we have to multiply ..
+			price = price * 1.4;
+//			VAT 9%  so we have to multiply ..
+			price = price * 1.09;
+			System.out.printf("%-17s  price : %3.2f € \n", drinkName, price);
 		}
 	}
 
@@ -181,22 +187,26 @@ public class App {
 		while (rs.next()) {
 
 			String dessertName = rs.getString("name");
-			int price = rs.getInt("price");
+			double price = rs.getInt("price");
+//			margin for profit so we have to multiply ..
+			price = price * 1.4;
+//			VAT 9%  so we have to multiply ..
+			price = price * 1.09;
 
-			System.out.printf("%-15s  price : %4d € \n", dessertName, price);
+			System.out.printf("%-15s  price : %3.2f € \n", dessertName, price);
 
 		}
 	}
 
 	private void manageCustomer(Scanner s) throws Exception {
-		
+
 		loop: while (true) {
 			System.out.println("\ninside manageCustomer method");
 			System.out.println("1 - Create a new customer");
 			System.out.println("2 - Delete Customer ");
 			System.out.println("3 - List All customers ");
 			System.out.println("0 - Exit ");
-			
+
 			String str = s.nextLine();
 			switch (str) {
 			case "1":
@@ -207,13 +217,13 @@ public class App {
 				break;
 			case "3":
 				listAllCustomer();
-		 		break;
+				break;
 			case "0":
-			    break loop;
+				break loop;
 			}
-			
+
 		}
-		
+
 	}
 
 	private void listAllCustomer() throws SQLException {
@@ -248,7 +258,7 @@ public class App {
 	private void newCustomer(Scanner s) throws SQLException {
 		System.out.println("inside new Customer methode");
 		System.out.println("insert name ");
-		
+
 		String name = s.nextLine();
 		System.out.println("insert postal code ");
 		String postalCode = s.nextLine();
@@ -260,7 +270,6 @@ public class App {
 		String phone = s.nextLine();
 		System.out.println("insert a password ");
 		String password = s.nextLine();
-		
 
 		createCustomer(conn, name, postalCode, address, email, phone, password);
 
