@@ -19,8 +19,10 @@ Table "items" {
 }
 
 Table "customers" {
-  "id" int [pk, not null]
+  "id" int [pk, not null,increment]
   "name" varchar(45) [default: NULL]
+  "postal_code" int [not null]
+  "adress" varchar(45) [not null]
   "email" varchar(45) [not null]
   "phone" varchar(45) [default: NULL]
   "passwd" varchar(45) [not null]
@@ -45,9 +47,7 @@ Table "orders" {
 }
 
 Ref: orders.id <> items.id
+
 Ref: orders.idrider > riders.id
 Ref: customers.id <> orders.id
 Ref: items.id <> ingredients.id
-
-
-

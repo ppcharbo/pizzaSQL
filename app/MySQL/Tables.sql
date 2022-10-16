@@ -18,9 +18,10 @@ CREATE TABLE `items` (
 );
 
 CREATE TABLE `customers` (
-  `id` int PRIMARY KEY NOT NULL,
+  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
   `postal_code` int NOT NULL,
+  `adress` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
   `phone` varchar(45) DEFAULT NULL,
   `passwd` varchar(45) NOT NULL

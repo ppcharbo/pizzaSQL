@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class App {
 	public static final String listAllCustomersSQL = "SELECT * FROM customers";
 	public static final String list_pizzasSQL = "SELECT id, name FROM items WHERE items_type_id = '1'";
-	public static final String ADD_CUSTOMER = "insert into customers(id,name,postal_code,email,phone,passwd) values (?,?,?,?,?,?);";
+	public static final String ADD_CUSTOMER = "insert into customers(name,postal_code,adress,email,phone,passwd) values (?,?,?,?,?,?);";
 	public static final String getIngredient = "SELECT name,price  FROM ingredients  INNER JOIN pizzas_ingredients  ON pizzas_ingredients.ingredients_id = ingredient.id  WHERE pizzas_ingredient.pizza_id = ?;";
 	public static final String deleteCustomerSQL = "DELETE FROM customers WHERE id =";
 	public static final String listDrinkSQL = "SELECT id,name, price FROM items WHERE items_type_id = '2'";
@@ -42,10 +42,10 @@ public class App {
 				listPizza();
 				break;
 			case "3":
-				listDrinks();
+				getListDrinks();
 				break;
 			case "4":
-				listDesserts();
+				getListDesserts();
 				break;
 			case "5":
 				listOfOrder();
@@ -74,7 +74,7 @@ public class App {
 			String nameOfPizza = resultPizza.getString("name");
 			String idOfPizza = resultPizza.getString("id");
 			String veggie = isVeggie(idOfPizza) ? "yes" : "no";
-			int price = getPriceOfPizza(idOfPizza) / 100;
+			int price = getListPizza(idOfPizza) / 100;
 			System.out.printf("%2s - %-25s veggie: %-3s price %4s € \n" + "", idOfPizza, nameOfPizza, veggie, price);
 		}
 
@@ -91,7 +91,7 @@ public class App {
 		return true;
 	}
 
-	private int getPriceOfPizza(String id) throws SQLException {
+	private int getListPizza(String id) throws SQLException {
 		java.sql.Statement statement = conn.createStatement();
 		String QRY = "SELECT price from items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id  WHERE items_id = '" + id + "'";
 		ResultSet rs = statement.executeQuery(QRY);
@@ -105,7 +105,7 @@ public class App {
 	/*
 	 * FOR DRINKS
 	 */
-	private void listDrinks() throws Exception {
+	private void getListDrinks() throws Exception {
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(listDrinkSQL);
 		while (rs.next()) {
@@ -120,7 +120,7 @@ public class App {
 	/*
 	 * FOR DESSERTS
 	 */
-	private void listDesserts() throws Exception {
+	private void getListDesserts() throws Exception {
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(dessertSQL);
 		while (rs.next()) {
@@ -129,7 +129,7 @@ public class App {
 			int price = rs.getInt("price");
 
 			System.out.printf("%2s - %-15s  price %4s € \n", id, dessertName, price);
-	
+
 		}
 	}
 
@@ -212,21 +212,32 @@ public class App {
 		System.out.println("insert name ");
 		Scanner s = new Scanner(System.in);
 		String name = s.nextLine();
-		System.out.println("insert phone ");
-		String phone = s.nextLine();
-		System.out.println("insert address ");
-		String address = s.nextLine();
 		System.out.println("insert postal code ");
 		String postalCode = s.nextLine();
+		System.out.println("insert address ");
+		String address = s.nextLine();
+		System.out.println("insert email ");
+		String email = s.nextLine();
+		System.out.println("insert phone ");
+		String phone = s.nextLine();
+		System.out.println("insert a password ");
+		String password = s.nextLine();
 		s.close();
-		PreparedStatement prepareStatement = conn.prepareStatement(ADD_CUSTOMER);
+
+		createCustomer(conn, name,postalCode, address, email, phone, password);
+
+	}
+
+	public void createCustomer(Connection connection, String name, String postalCode, String address, String email, String phone, String password) throws SQLException {
+		PreparedStatement prepareStatement = connection.prepareStatement(ADD_CUSTOMER);
 
 		prepareStatement.setString(1, name);
-		prepareStatement.setString(2, phone);
+		prepareStatement.setString(2, postalCode);
 		prepareStatement.setString(3, address);
-		prepareStatement.setString(4, postalCode);
+		prepareStatement.setString(4, email);
+		prepareStatement.setString(5, phone);
+		prepareStatement.setString(6, password);
 		prepareStatement.executeUpdate();
-
 	}
 
 	private void listOfIngredient() throws Exception {
