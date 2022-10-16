@@ -27,6 +27,8 @@ public class App {
 	public static final String deleteCustomerSQL = "DELETE FROM customers WHERE id =";
 	public static final String listDrinkSQL = "SELECT id,name, price FROM items WHERE items_type_id = '2'";
 	public static final String dessertSQL = "SELECT id,name, price FROM items WHERE items_type_id = '3'";
+	public static final String isVeggieSQL = "SELECT veggie from items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id  WHERE items_id = ?'";
+	public static final String priceIngredientSQL = "SELECT price from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?'";
 	protected static String customerId = "";
 	protected static String customerEmail = "";
 	protected static String customerPhone = "";
@@ -80,7 +82,8 @@ public class App {
 	 * FOR PIZZA
 	 */
 	private void listPizza() throws SQLException {
-		System.out.println("\ninside pizza list methd");
+		System.out.println("\n Available pizza menu\n");
+
 		java.sql.Statement statement = conn.createStatement();
 		String QRY = "SELECT id, name FROM items WHERE items_type_id = '1'";
 		ResultSet resultPizza = statement.executeQuery(QRY);
@@ -89,9 +92,10 @@ public class App {
 			String nameOfPizza = resultPizza.getString("name");
 			String idOfPizza = resultPizza.getString("id");
 			String veggie = isVeggie(idOfPizza) ? "yes" : "no";
-			int price = getListPizza(idOfPizza) / 100;
-			System.out.printf("%2s - %-25s veggie: %-3s price %4s € \n" + "", idOfPizza, nameOfPizza, veggie, price);
-			System.out.println("<INGREDIENTS:"+getIngredientOfPizza(idOfPizza));
+			int price = getPriceOfIngredients(idOfPizza) / 100;
+			String ingredientOfPizza = getIngredientOfPizza(idOfPizza);
+			System.out.printf("%-25s veggie : %-3s price : %2d € (%s) \n", nameOfPizza, veggie, price, ingredientOfPizza);
+
 		}
 
 	}
@@ -111,9 +115,10 @@ public class App {
 	}
 
 	private boolean isVeggie(String id) throws SQLException {
-		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT veggie from items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id  WHERE items_id = '" + id + "'";
-		ResultSet rs = statement.executeQuery(QRY);
+
+		PreparedStatement statement = conn.prepareStatement(isVeggieSQL);
+		statement.setString(1, id);
+		ResultSet rs = statement.executeQuery(isVeggieSQL);
 		while (rs.next()) {
 			if (rs.getInt("veggie") == 0)
 				return false;
@@ -121,39 +126,43 @@ public class App {
 		return true;
 	}
 
-	private int getListPizza(String id) throws SQLException {
+	private int getPriceOfIngredients(String id) throws SQLException {
 		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT price from items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id  WHERE items_id = '" + id + "'";
-		ResultSet rs = statement.executeQuery(QRY);
+		ResultSet rs = statement.executeQuery(priceIngredientSQL);
 		int price = 0;
 		while (rs.next()) {
 			price += rs.getInt("price");
 		}
 		return price;
 	}
+
 	private String getIngredientOfPizza(String id) throws SQLException {
 		StringBuilder out = new StringBuilder();
 		Statement stmt = conn.createStatement();
-		String QRY = "SELECT name FROM items_ingredients JOIN ingredients i " +
-						"on i.id = items_ingredients.ingredients_id WHERE items_id ='"+id+"'";
+		String QRY = "SELECT name FROM items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id WHERE items_id ='" + id + "'";
 		ResultSet rs = stmt.executeQuery(QRY);
 		while (rs.next()) {
-			out.append("\t").append(rs.getString("name"));
+			out.append(rs.getString("name"));
+			if (!rs.isLast())
+				out.append(", ");
+
 		}
 		return out.toString();
 	}
+
 	/*
 	 * FOR DRINKS
 	 */
 	private void getListDrinks() throws Exception {
+		System.out.println("\n Available drinks menu\n");
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(listDrinkSQL);
 		while (rs.next()) {
 
 			String drinkName = rs.getString("name");
 			int price = rs.getInt("price");
-			int id = rs.getInt("id");
-			System.out.println("[ Drink: " + drinkName + " -- Price: " + price + "-- ID: " + id + " ]");
+
+			System.out.printf("%-17s  price : %4d € \n", drinkName, price);
 		}
 	}
 
@@ -161,16 +170,16 @@ public class App {
 	 * FOR DESSERTs
 	 */
 	private void getListDesserts() throws Exception {
+		System.out.println("\n Available dessert menu\n");
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(dessertSQL);
-		String QRY = "SELECT id name, price FROM items WHERE items_type_id = '3'";
-		rs = statement.executeQuery(QRY);
+		rs = statement.executeQuery(dessertSQL);
 		while (rs.next()) {
-			int id = rs.getInt("id");
-			String dessertName = rs.getString("name");
-			double price = (double) rs.getInt("price")/100;
 
-			System.out.printf("%2s - %-15s  price %4s € \n", id, dessertName, price);
+			String dessertName = rs.getString("name");
+			int price = rs.getInt("price");
+
+			System.out.printf("%-15s  price : %4d € \n", dessertName, price);
 
 		}
 	}
