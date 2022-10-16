@@ -85,7 +85,7 @@ public class App {
 	 * FOR PIZZA
 	 */
 	private void getListPizza(Boolean showId) throws SQLException {
-
+		System.out.println("");
 		java.sql.Statement statement = conn.createStatement();
 		String QRY = "SELECT id, name FROM items WHERE items_type_id = '1'";
 		ResultSet resultPizza = statement.executeQuery(QRY);
@@ -167,7 +167,7 @@ public class App {
 	 * FOR DRINKS
 	 */
 	private void getListDrinks(Boolean showId) throws Exception {
-
+		System.out.println("");
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(listDrinkSQL);
 		while (rs.next()) {
@@ -185,12 +185,11 @@ public class App {
 				System.out.printf("%-25s  price : %4.2f € \n", drinkName, price);
 		}
 	}
-
 	/*
 	 * FOR DESSERTs
 	 */
 	private void getListDesserts(boolean showId) throws Exception {
-
+		System.out.println("");
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(dessertSQL);
 		rs = statement.executeQuery(dessertSQL);
@@ -317,6 +316,7 @@ public class App {
 
 			String string = s.nextLine();
 			if (string.equals("d")) {
+				//send the order through
 				break;
 			} else {
 				// add item to orders_items
