@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import pizzaSQL.model.Customer;
 import pizzaSQL.model.Ingredients;
 import pizzaSQL.model.Item;
 import pizzaSQL.model.ItemType;
@@ -17,7 +18,7 @@ public class Hibernate {
 	public static final String listAllCustomersSQL = "SELECT * FROM customers";
 	public static final String list_pizzasSQL = "SELECT id, name FROM items WHERE items_type_id = '1'";
 	public static final String ADD_CUSTOMER = "insert into customers(name,postal_code,adress,email,phone,passwd) values (?,?,?,?,?,?);";
-	public static final String findIngredientSQL = "SELECT id,name,price,isVeggie FROM items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id WHERE items_id =?";
+	public static final String findIngredientSQL = "SELECT id,name,price,veggie FROM items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id WHERE items_id =?";
 	public static final String deleteCustomerSQL = "DELETE FROM customers WHERE id =";
 	public static final String listDrinkSQL = "SELECT id,name, price FROM items WHERE items_type_id = '2'";
 	public static final String dessertSQL = "SELECT id,name, price FROM items WHERE items_type_id = '3'";
@@ -171,7 +172,7 @@ public class Hibernate {
 		
 		Collection<Ingredients> ret= new ArrayList<Ingredients>();
 		
-		StringBuilder out = new StringBuilder();
+	 
 		 PreparedStatement stmt = conn.prepareStatement(findIngredientSQL);
 		 stmt.setString(1, pizzaId);
 		ResultSet rs = stmt.executeQuery();
@@ -179,12 +180,12 @@ public class Hibernate {
 			String id = rs.getString("id");
 			String name=rs.getString("name");
 			Double price =rs.getDouble("price");
-			Boolean isVeggie=rs.getBoolean("isVeggie");
+			Boolean isVeggie=rs.getBoolean("veggie");
 			ret.add(new Ingredients(id,name,price,isVeggie));
 
 		}
 		
-		return null;
+		return ret;
 	}
 
 	/*
@@ -229,9 +230,8 @@ public class Hibernate {
 
 	}
 
-	public void createCustomer(Connection connection, String name, String postalCode, String address, String email, String phone, String password) throws SQLException {
-		PreparedStatement prepareStatement = connection.prepareStatement(ADD_CUSTOMER);
-
+	public void createCustomer(String name, String postalCode, String address, String email, String phone, String password) throws SQLException {
+		PreparedStatement prepareStatement = conn.prepareStatement(ADD_CUSTOMER);
 		prepareStatement.setString(1, name);
 		prepareStatement.setString(2, postalCode);
 		prepareStatement.setString(3, address);
@@ -239,5 +239,69 @@ public class Hibernate {
 		prepareStatement.setString(5, phone);
 		prepareStatement.setString(6, password);
 		prepareStatement.executeUpdate();
+	}
+
+	public Collection<Item> findAllDrinks() throws Exception {
+		 
+		Collection<Item> ret = new  ArrayList<Item>();
+		
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(listDrinkSQL);
+		while (rs.next()) {
+
+			String id = rs.getString("id");
+			String name = rs.getString("name");
+			double price = rs.getInt("price");
+//			margin for profit so we have to multiply ..
+			price = price * 1.4;
+//			VAT 9%  so we have to multiply ..
+			price = price * 1.09;
+			ret.add(new Item(id, ItemType.drink, name, price, false));
+			
+		}
+		return ret ;
+	}
+
+	public Collection<Item> findAllDessert() throws Exception {
+		 
+Collection<Item> ret = new  ArrayList<Item>();
+		
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(dessertSQL);
+		while (rs.next()) {
+
+			String id = rs.getString("id");
+			String name = rs.getString("name");
+			double price = rs.getInt("price");
+//			margin for profit so we have to multiply ..
+			price = price * 1.4;
+//			VAT 9%  so we have to multiply ..
+			price = price * 1.09;
+			ret.add(new Item(id, ItemType.drink, name, price, false));
+			
+		}
+		return ret ;
+	}
+
+	public Collection<Customer> findAllCustomers() throws Exception {
+Collection<Customer> ret = new  ArrayList<Customer>();
+		
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(listAllCustomersSQL);
+		while (rs.next()) {
+
+			String id = rs.getString("id");
+			String name = rs.getString("name");
+			int postalCode = rs.getInt("postal_code");
+			String address = rs.getString("adress");
+			String email = rs.getString("email");
+			String phone = rs.getString("phone");
+			String password = rs.getString("passwd");
+//			margin for profit so we have to multiply ..
+			 
+			ret.add(new Customer(id, name,postalCode,address,email,phone,password));
+			
+		}
+		return ret ;
 	}
 }

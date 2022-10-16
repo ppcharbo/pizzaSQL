@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Scanner;
 
+import pizzaSQL.model.Customer;
 import pizzaSQL.model.Ingredients;
 import pizzaSQL.model.Item;
 
@@ -77,12 +78,47 @@ public App() throws  Exception {
 		s.close();
 	}
 
-	private void getListDesserts(boolean b) {
-		// TODO Auto-generated method stub
+	private void getListDesserts(boolean showId) throws Exception {
+		
+		Collection<Item> items = hibernate.findAllDessert();
+
+		for (Item item : items) {
+
+			String id = item.getId();
+			String name = item.getName();
+			Double price = item.getPrice();
+						
+
+			if (showId)
+				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, name, price);
+			else
+				System.out.printf("%-25s  price : %4.2f € \n", name, price);
+
+		}
+
+		
 		
 	}
-	private void getListDrinks(boolean b) {
-		// TODO Auto-generated method stub
+	private void getListDrinks(boolean showId) throws Exception {
+		
+		Collection<Item> items = hibernate.findAllDrinks();
+
+		for (Item item : items) {
+
+			String id = item.getId();
+			String name = item.getName();
+			Double price = item.getPrice();
+						
+
+			if (showId)
+				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, name, price);
+			else
+				System.out.printf("%-25s  price : %4.2f € \n", name, price);
+
+		}
+
+		
+
 		
 	}
 	/*
@@ -101,10 +137,19 @@ public App() throws  Exception {
 			Boolean isVeggie = item.isVeggie();
 			Collection<Ingredients> ingredients = item.getIngredients();
 
+			String listIng = new String();
+			for (Ingredients o : ingredients) {
+				listIng +=o.getName() +",";
+			}
+			StringBuffer sb= new StringBuffer(listIng);  
+			//invoking the method  
+			sb.deleteCharAt(sb.length()-1);  
+			listIng=new String(sb);
+
 			if (showId)
-				System.out.printf("%2s - %-25s  price : %4.2f € veggie : %-3s (%s) \n", id, name, price, isVeggie, ingredients);
+				System.out.printf("%2s - %-25s  price : %4.2f € veggie : %-3s (%s) \n", id, name, price, isVeggie, listIng);
 			else
-				System.out.printf("%-25s  price : %4.2f € veggie : %-3s (%s) \n", name, price, isVeggie, ingredients);
+				System.out.printf("%-25s  price : %4.2f € veggie : %-3s (%s) \n", name, price, isVeggie, listIng);
 
 		}
 
@@ -119,6 +164,7 @@ public App() throws  Exception {
 
 		loop: while (true) {
 			System.out.println("\ninside manageCustomer method");
+ 			System.out.println("1 - Create Customer ");
  			System.out.println("2 - List All customers ");
 			System.out.println("0 - Exit ");
 
@@ -127,7 +173,7 @@ public App() throws  Exception {
 			case "1":
 				newCustomer(s);
 				break;
-			case "3":
+			case "2":
 				listAllCustomer();
 				break;
 			case "0":
@@ -138,9 +184,21 @@ public App() throws  Exception {
 
 	}
 
-	private void listAllCustomer() throws SQLException {
+	private void listAllCustomer() throws Exception {
 		System.out.println("inside listAllCustomer methd");
 
+		Collection<Customer> list= hibernate.findAllCustomers();
+		
+		for (Customer customer : list) {
+			
+			String id = customer.getId();
+			String name = customer.getName();
+			String email = customer.getEmail();
+			String phone = customer.getPhone();;
+
+			System.out.println("[Customer id: " + id + " Name: " + name + " email: " + email + " Phone num: " + phone);
+
+		}
 		
 
 	}
@@ -162,6 +220,8 @@ public App() throws  Exception {
 		String phone = s.nextLine();
 		System.out.println("insert a password ");
 		String password = s.nextLine();
+		
+		hibernate.createCustomer( name, postalCode, address, email, phone, password);
 
 		
 
