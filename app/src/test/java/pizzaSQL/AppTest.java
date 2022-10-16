@@ -8,7 +8,7 @@ import org.junit.Test;
 public class AppTest {
 	@Test
 	public void testAppHasAGreeting() throws Exception {
-		App app = new App();
+		//Controller app = new Controller();
 
 		//Connection conn = app.makeConnection(App.user, App.URL, App.passwd);
 
@@ -17,7 +17,7 @@ public class AppTest {
 
 	@Test
 	public void testCreateCustomers() throws Exception {
-		App app = new App();
+		//Controller app = new Controller();
 /*
 		Connection conn = app.makeConnection(App.user, App.URL, App.passwd);
 		String name = "pp";

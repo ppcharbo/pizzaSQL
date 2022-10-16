@@ -12,7 +12,7 @@ import pizzaSQL.model.Customer;
 import pizzaSQL.model.Ingredients;
 import pizzaSQL.model.Item;
 
-public class App {
+public class Controller {
 	/*
 	 * FOR LOGIN:
 	 */
@@ -28,10 +28,12 @@ public class App {
 	protected static Connection conn;
 
 	private Hibernate hibernate;
-public App() throws  Exception {
-	
-	hibernate = new Hibernate(user,passwd,URL);
-}
+
+	public Controller() throws Exception {
+
+		hibernate = new Hibernate(user, passwd, URL);
+	}
+
 	public void mainLoop(Boolean showId) throws Exception {
 
 		Scanner s;
@@ -79,7 +81,7 @@ public App() throws  Exception {
 	}
 
 	private void getListDesserts(boolean showId) throws Exception {
-		
+
 		Collection<Item> items = hibernate.findAllDessert();
 
 		for (Item item : items) {
@@ -87,7 +89,6 @@ public App() throws  Exception {
 			String id = item.getId();
 			String name = item.getName();
 			Double price = item.getPrice();
-						
 
 			if (showId)
 				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, name, price);
@@ -96,11 +97,10 @@ public App() throws  Exception {
 
 		}
 
-		
-		
 	}
+
 	private void getListDrinks(boolean showId) throws Exception {
-		
+
 		Collection<Item> items = hibernate.findAllDrinks();
 
 		for (Item item : items) {
@@ -108,7 +108,6 @@ public App() throws  Exception {
 			String id = item.getId();
 			String name = item.getName();
 			Double price = item.getPrice();
-						
 
 			if (showId)
 				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, name, price);
@@ -117,15 +116,12 @@ public App() throws  Exception {
 
 		}
 
-		
-
-		
 	}
 	/*
 	 * FOR PIZZA
 	 */
 
-	private void getListPizza(Boolean showId) throws  Exception {
+	private void getListPizza(Boolean showId) throws Exception {
 
 		Collection<Item> items = hibernate.findAllPizza();
 
@@ -139,12 +135,12 @@ public App() throws  Exception {
 
 			String listIng = new String();
 			for (Ingredients o : ingredients) {
-				listIng +=o.getName() +",";
+				listIng += o.getName() + ",";
 			}
-			StringBuffer sb= new StringBuffer(listIng);  
-			//invoking the method  
-			sb.deleteCharAt(sb.length()-1);  
-			listIng=new String(sb);
+			StringBuffer sb = new StringBuffer(listIng);
+			// invoking the method
+			sb.deleteCharAt(sb.length() - 1);
+			listIng = new String(sb);
 
 			if (showId)
 				System.out.printf("%2s - %-25s  price : %4.2f € veggie : %-3s (%s) \n", id, name, price, isVeggie, listIng);
@@ -154,18 +150,13 @@ public App() throws  Exception {
 		}
 
 	}
- 
 
-	
-
-	
-	
 	private void manageCustomer(Scanner s) throws Exception {
 
 		loop: while (true) {
 			System.out.println("\ninside manageCustomer method");
- 			System.out.println("1 - Create Customer ");
- 			System.out.println("2 - List All customers ");
+			System.out.println("1 - Create Customer ");
+			System.out.println("2 - List All customers ");
 			System.out.println("0 - Exit ");
 
 			String str = s.nextLine();
@@ -187,23 +178,21 @@ public App() throws  Exception {
 	private void listAllCustomer() throws Exception {
 		System.out.println("inside listAllCustomer methd");
 
-		Collection<Customer> list= hibernate.findAllCustomers();
-		
+		Collection<Customer> list = hibernate.findAllCustomers();
+
 		for (Customer customer : list) {
-			
+
 			String id = customer.getId();
 			String name = customer.getName();
 			String email = customer.getEmail();
-			String phone = customer.getPhone();;
+			String phone = customer.getPhone();
+			;
 
 			System.out.println("[Customer id: " + id + " Name: " + name + " email: " + email + " Phone num: " + phone);
 
 		}
-		
 
 	}
-
-	 
 
 	private void newCustomer(Scanner s) throws SQLException {
 		System.out.println("inside new Customer methode");
@@ -220,14 +209,10 @@ public App() throws  Exception {
 		String phone = s.nextLine();
 		System.out.println("insert a password ");
 		String password = s.nextLine();
-		
-		hibernate.createCustomer( name, postalCode, address, email, phone, password);
 
-		
+		hibernate.createCustomer(name, postalCode, address, email, phone, password);
 
 	}
-
-	
 
 	private void listOfOrder() {
 		System.out.println("inside listOfOrder methd");
@@ -255,6 +240,6 @@ public App() throws  Exception {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new App().mainLoop(false);
+		new Controller().mainLoop(false);
 	}
 }

@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -55,69 +54,6 @@ public class Hibernate {
 			price += rs.getInt("price");
 		}
 		return price;
-	}
-
-	private String getIngredientOfPizza(String id) throws SQLException {
-		StringBuilder out = new StringBuilder();
-		Statement stmt = conn.createStatement();
-		String QRY = "SELECT name FROM items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id WHERE items_id ='" + id + "'";
-		ResultSet rs = stmt.executeQuery(QRY);
-		while (rs.next()) {
-			out.append(rs.getString("name"));
-			if (!rs.isLast())
-				out.append(", ");
-
-		}
-		return out.toString();
-	}
-
-	private void getListPizza(Boolean showId) throws SQLException {
-
-		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT id, name FROM items WHERE items_type_id = '1'";
-		ResultSet resultPizza = statement.executeQuery(QRY);
-		while (resultPizza.next()) {
-
-			String nameOfPizza = resultPizza.getString("name");
-			String idOfPizza = resultPizza.getString("id");
-			String veggie = isVeggie(idOfPizza) ? "yes" : "no";
-			double price = getPriceOfIngredients(idOfPizza) / 100;
-//			margin for profit so we have to multiply ..
-			price = price * 1.4;
-//			VAT 9%  so we have to multiply ..
-			price = price * 1.09;
-			String ingredientOfPizza = getIngredientOfPizza(idOfPizza);
-
-			if (showId)
-				System.out.printf("%2s - %-25s  price : %4.2f € veggie : %-3s (%s) \n", idOfPizza, nameOfPizza, price, veggie, ingredientOfPizza);
-			else
-				System.out.printf("%-25s  price : %4.2f € veggie : %-3s (%s) \n", nameOfPizza, price, veggie, ingredientOfPizza);
-
-		}
-
-	}
-
-	/*
-	 * FOR DRINKS
-	 */
-	private void getListDrinks(Boolean showId) throws Exception {
-
-		java.sql.Statement statement = conn.createStatement();
-		ResultSet rs = statement.executeQuery(listDrinkSQL);
-		while (rs.next()) {
-
-			String id = rs.getString("id");
-			String drinkName = rs.getString("name");
-			double price = rs.getInt("price");
-//			margin for profit so we have to multiply ..
-			price = price * 1.4;
-//			VAT 9%  so we have to multiply ..
-			price = price * 1.09;
-			if (showId)
-				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, drinkName, price);
-			else
-				System.out.printf("%-25s  price : %4.2f € \n", drinkName, price);
-		}
 	}
 
 	private boolean isVeggie(String id) throws SQLException {
@@ -186,48 +122,6 @@ public class Hibernate {
 		}
 		
 		return ret;
-	}
-
-	/*
-	 * FOR DESSERTs
-	 */
-	private void getListDesserts(boolean showId) throws Exception {
-
-		java.sql.Statement statement = conn.createStatement();
-		ResultSet rs = statement.executeQuery(dessertSQL);
-		rs = statement.executeQuery(dessertSQL);
-		while (rs.next()) {
-			String id = rs.getString("id");
-
-			String dessertName = rs.getString("name");
-			double price = rs.getInt("price");
-//			margin for profit so we have to multiply ..
-			price = price * 1.4;
-//			VAT 9%  so we have to multiply ..
-			price = price * 1.09;
-			if (showId)
-				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, dessertName, price);
-			else
-				System.out.printf("%-25s  price : %4.2f € \n", dessertName, price);
-
-		}
-	}
-
-	private void listAllCustomer() throws SQLException {
-		System.out.println("inside listAllCustomer methd");
-
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(listAllCustomersSQL);
-		while (rs.next()) {
-
-			String id = rs.getString("id");
-			String name = rs.getString("name");
-			String email = rs.getString("email");
-			String phone = rs.getString("phone");
-
-			System.out.println("[Customer id: " + id + " Name: " + name + " email: " + email + " Phone num: " + phone);
-		}
-
 	}
 
 	public void createCustomer(String name, String postalCode, String address, String email, String phone, String password) throws SQLException {
