@@ -35,7 +35,7 @@ public class App {
 	protected static String customerPostcode = "";
 	protected static Connection conn;
 
-	public void mainLoop() throws Exception {
+	public void mainLoop(Boolean showId) throws Exception {
 		conn = makeConnection(user, URL, passwd);
 		Scanner s;
 
@@ -53,16 +53,19 @@ public class App {
 			String str = s.nextLine();
 			switch (str) {
 			case "1":
-				makeOrder();
+				makeOrder(s);
 				break;
 			case "2":
-				listPizza();
+				System.out.println("\n Available pizza \n");
+				getListPizza(false);
 				break;
 			case "3":
-				getListDrinks();
+				System.out.println("\n Available drinks \n");
+				getListDrinks(false);
 				break;
 			case "4":
-				getListDesserts();
+				System.out.println("\n Available dessert \n");
+				getListDesserts(false);
 				break;
 			case "5":
 				listOfOrder();
@@ -81,8 +84,7 @@ public class App {
 	/*
 	 * FOR PIZZA
 	 */
-	private void listPizza() throws SQLException {
-		System.out.println("\n Available pizza menu\n");
+	private void getListPizza(Boolean showId) throws SQLException {
 
 		java.sql.Statement statement = conn.createStatement();
 		String QRY = "SELECT id, name FROM items WHERE items_type_id = '1'";
@@ -98,7 +100,11 @@ public class App {
 //			VAT 9%  so we have to multiply ..
 			price = price * 1.09;
 			String ingredientOfPizza = getIngredientOfPizza(idOfPizza);
-			System.out.printf("%-25s veggie : %-3s price : %3.2f € (%s) \n", nameOfPizza, veggie, price, ingredientOfPizza);
+
+			if (showId)
+				System.out.printf("%2s - %-25s  price : %4.2f € veggie : %-3s (%s) \n", idOfPizza, nameOfPizza, price, veggie, ingredientOfPizza);
+			else
+				System.out.printf("%-25s  price : %4.2f € veggie : %-3s (%s) \n", nameOfPizza, price, veggie, ingredientOfPizza);
 
 		}
 
@@ -160,31 +166,36 @@ public class App {
 	/*
 	 * FOR DRINKS
 	 */
-	private void getListDrinks() throws Exception {
-		System.out.println("\n Available drinks menu\n");
+	private void getListDrinks(Boolean showId) throws Exception {
+
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(listDrinkSQL);
 		while (rs.next()) {
 
+			String id = rs.getString("id");
 			String drinkName = rs.getString("name");
 			double price = rs.getInt("price");
 //			margin for profit so we have to multiply ..
 			price = price * 1.4;
 //			VAT 9%  so we have to multiply ..
 			price = price * 1.09;
-			System.out.printf("%-17s  price : %3.2f € \n", drinkName, price);
+			if (showId)
+				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, drinkName, price);
+			else
+				System.out.printf("%-25s  price : %4.2f € \n", drinkName, price);
 		}
 	}
 
 	/*
 	 * FOR DESSERTs
 	 */
-	private void getListDesserts() throws Exception {
-		System.out.println("\n Available dessert menu\n");
+	private void getListDesserts(boolean showId) throws Exception {
+
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(dessertSQL);
 		rs = statement.executeQuery(dessertSQL);
 		while (rs.next()) {
+			String id = rs.getString("id");
 
 			String dessertName = rs.getString("name");
 			double price = rs.getInt("price");
@@ -192,8 +203,10 @@ public class App {
 			price = price * 1.4;
 //			VAT 9%  so we have to multiply ..
 			price = price * 1.09;
-
-			System.out.printf("%-15s  price : %3.2f € \n", dessertName, price);
+			if (showId)
+				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, dessertName, price);
+			else
+				System.out.printf("%-25s  price : %4.2f € \n", dessertName, price);
 
 		}
 	}
@@ -292,20 +305,16 @@ public class App {
 
 	}
 
-	private void makeOrder() throws Exception {
+	private void makeOrder(Scanner s) throws Exception {
 
-		if (!login()) {
-			System.out.println("Login failed :(");
-			return;
-		}
-		System.out.println("inside makeOrder methd");
-		listPizza();
-		getListDrinks();
-		getListDesserts();
+		System.out.println("Welcome , please enter your choices");
+		getListPizza(true);
+		getListDrinks(true);
+		getListDesserts(true);
 		System.out.println("Type the id of the products you wish to purchase. When you are done, type 'd' ");
-		Scanner s;
+
 		while (true) {
-			s = new Scanner(System.in);
+
 			String string = s.nextLine();
 			if (string.equals("d")) {
 				break;
@@ -313,31 +322,10 @@ public class App {
 				// add item to orders_items
 			}
 		}
-		s.close();
-	}
 
-	public boolean login() throws SQLException {
-		System.out.println("Login needed!\nEmail:");
-		Scanner s = new Scanner(System.in);
-		String email = s.nextLine();
-		System.out.println("Password:");
-		String pass = s.nextLine();
-		Statement stmt = conn.createStatement();
-		String QRY = "SELECT * FROM customers WHERE email='" + email + "' AND passwd='" + pass + "'";
-		ResultSet rs = stmt.executeQuery(QRY);
-		boolean success = false;
-		while (rs.next()) {
-			customerId += rs.getInt("id");
-			customerPhone = rs.getString("phone");
-			customerPostcode = rs.getString("postal_code");
-			customerEmail = rs.getString("email");
-			success = true;
-		}
-		s.close();
-		return success;
 	}
 
 	public static void main(String[] args) throws Exception {
-		new App().mainLoop();
+		new App().mainLoop(false);
 	}
 }
