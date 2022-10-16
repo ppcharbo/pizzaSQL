@@ -69,7 +69,7 @@ public class App {
 				break;
 
 			case "6":
-				manageCustomer();
+				manageCustomer(s);
 				break;
 			case "0":
 				break loop;
@@ -92,9 +92,10 @@ public class App {
 			String nameOfPizza = resultPizza.getString("name");
 			String idOfPizza = resultPizza.getString("id");
 			String veggie = isVeggie(idOfPizza) ? "yes" : "no";
-			int price = getPriceOfIngredients(idOfPizza) / 100;
+			double price = getPriceOfIngredients(idOfPizza) / 100;
+			price=price*1.4;
 			String ingredientOfPizza = getIngredientOfPizza(idOfPizza);
-			System.out.printf("%-25s veggie : %-3s price : %2d € (%s) \n", nameOfPizza, veggie, price, ingredientOfPizza);
+			System.out.printf("%-25s veggie : %-3s price : %3.2f € (%s) \n", nameOfPizza, veggie, price, ingredientOfPizza);
 
 		}
 
@@ -187,15 +188,15 @@ public class App {
 		}
 	}
 
-	private void manageCustomer() throws Exception {
-		Scanner s;
+	private void manageCustomer(Scanner s) throws Exception {
+		
 		loop: while (true) {
 			System.out.println("\ninside manageCustomer method");
 			System.out.println("1 - Create a new customer");
 			System.out.println("2 - Delete Customer ");
 			System.out.println("3 - List All customers ");
 			System.out.println("0 - Exit ");
-			s= new Scanner(System.in);
+			
 			String str = s.nextLine();
 			switch (str) {
 			case "1":
@@ -212,7 +213,7 @@ public class App {
 			}
 			
 		}
-		s.close();
+		
 	}
 
 	private void listAllCustomer() throws SQLException {
@@ -227,7 +228,7 @@ public class App {
 			String email = rs.getString("email");
 			String phone = rs.getString("phone");
 
-			System.out.println("[Customer id: " + id + " Name: " + name + " email: " + email + "Phone num: " + phone);
+			System.out.println("[Customer id: " + id + " Name: " + name + " email: " + email + " Phone num: " + phone);
 		}
 
 	}
