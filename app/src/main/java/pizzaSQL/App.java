@@ -79,7 +79,7 @@ public class App {
 			String nameOfPizza = resultPizza.getString("name");
 			String idOfPizza = resultPizza.getString("id");
 			String veggie = isVeggie(idOfPizza) ? " -- Vegetarian" : "";
-			int price = getPriceOfPizza(idOfPizza);
+			double price = (double) getPriceOfPizza(idOfPizza)/100;
 			System.out.println("[ Pizza: "+nameOfPizza+" -- Price: "+price+veggie+"--ID: "+idOfPizza+" ]");
 			System.out.println("<INGREDIENTS:"+getIngredientOfPizza(idOfPizza));
 		}
@@ -123,7 +123,7 @@ public class App {
 		ResultSet rs = statement.executeQuery(QRY);
 		while (rs.next()) {
 			String drinkName = rs.getString("name");
-			int price = rs.getInt("price");
+			double price = (double) rs.getInt("price")/100;
 			int id = rs.getInt("id");
 			System.out.println("[ Drink: "+drinkName+" -- Price: "+price+"-- ID: "+id+ " ]");
 		}
@@ -138,7 +138,7 @@ public class App {
 		ResultSet rs = statement.executeQuery(QRY);
 		while (rs.next()) {
 			String dessertName = rs.getString("name");
-			int price = rs.getInt("price");
+			double price = (double) rs.getInt("price")/100;
 			int id = rs.getInt("id");
 			System.out.println("[ Desserts: "+dessertName+" -- Price: "+price+"-- ID: "+id+ " ]");
 		}
