@@ -115,7 +115,7 @@ public class App {
 		ResultSet rs = statement.executeQuery(listDrinkSQL);
 		while (rs.next()) {
 			String drinkName = rs.getString("name");
-			int price = rs.getInt("price");
+			double price = (double) rs.getInt("price")/100;
 			int id = rs.getInt("id");
 			System.out.println("[ Drink: "+drinkName+" -- Price: "+price+"-- ID: "+id+ " ]");
 		}
