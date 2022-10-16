@@ -13,7 +13,7 @@ public class AppTest {
 	public void testAppHasAGreeting() throws Exception {
 		App app = new App();
 
-		Connection conn = app.makeConnection();
+		Connection conn = app.makeConnection(App.user, App.URL, App.passwd);
 
 		assertNotNull(conn);
 	}
@@ -22,15 +22,15 @@ public class AppTest {
 	public void testCreateCustomers() throws Exception {
 		App app = new App();
 
-		Connection conn = app.makeConnection();
+		Connection conn = app.makeConnection(App.user, App.URL, App.passwd);
 		String name = "pp";
 		String phone = "616";
 		String adress = "jdfjkbv";
 		String postalCode = "316";
 		String password = "jyfui";
-		String email="wecre.com";
-		app.createCustomer(conn, name, postalCode, adress, email,phone ,password);
-		
+		String email = "wecre.com";
+		app.createCustomer(conn, name, postalCode, adress, email, phone, password);
+
 		assertNotNull(conn);
 	}
 }

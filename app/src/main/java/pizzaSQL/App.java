@@ -3,19 +3,22 @@
  */
 package pizzaSQL;
 
-import javax.swing.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Scanner;
 
 public class App {
 	/*
-			FOR LOGIN:
+	 * FOR LOGIN:
 	 */
-	private static final String dbName = "pizza";
-	private static final String user = "root";
-	private static final String passwd = "dio";
-	private static final String URL = "jdbc:mysql://127.0.0.1/"+dbName;
-
+	public static final String dbName = "pizza";
+	public static final String user = "root";
+	public static final String passwd = "dio";
+	public static final String URL = "jdbc:mysql://127.0.0.1/" + dbName;
 
 	public static final String listAllCustomersSQL = "SELECT * FROM customers";
 	public static final String list_pizzasSQL = "SELECT id, name FROM items WHERE items_type_id = '1'";
@@ -23,15 +26,15 @@ public class App {
 	public static final String getIngredient = "SELECT name,price  FROM ingredients  INNER JOIN pizzas_ingredients  ON pizzas_ingredients.ingredients_id = ingredient.id  WHERE pizzas_ingredient.pizza_id = ?;";
 	public static final String deleteCustomerSQL = "DELETE FROM customers WHERE id =";
 	public static final String listDrinkSQL = "SELECT id,name, price FROM items WHERE items_type_id = '2'";
-	public Connection conn;
-
+	public static final String dessertSQL = "SELECT id,name, price FROM items WHERE items_type_id = '3'";
 	protected static String customerId = "";
 	protected static String customerEmail = "";
 	protected static String customerPhone = "";
 	protected static String customerPostcode = "";
+	protected static Connection conn;
 
 	public void mainLoop() throws Exception {
-		conn = makeConnection(user,URL,passwd);
+		conn = makeConnection(user, URL, passwd);
 		Scanner s;
 
 		loop: while (true) {
@@ -44,7 +47,7 @@ public class App {
 					5 - List of current orders
 					6 - Manage Customers
 					0 - Exit\s""");
-			Scanner s = new Scanner(System.in);
+			s = new Scanner(System.in);
 			String str = s.nextLine();
 			switch (str) {
 			case "1":
@@ -57,21 +60,24 @@ public class App {
 				getListDrinks();
 				break;
 			case "4":
+				getListDesserts();
+				break;
 			case "5":
 				listOfOrder();
 				break;
-				getListDesserts();
-				manageCustomer();
-				break;
+
 			case "6":
+				manageCustomer();
 				break;
 			case "0":
 				break loop;
 			}
 		}
+		s.close();
 	}
+
 	/*
-		FOR PIZZA
+	 * FOR PIZZA
 	 */
 	private void listPizza() throws SQLException {
 		System.out.println("\ninside pizza list methd");
@@ -88,22 +94,40 @@ public class App {
 		}
 
 	}
+
+	public Connection makeConnection(String user, String URL, String passwd) throws ClassNotFoundException {
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(URL, user, passwd);
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return conn;
+	}
+
 	private boolean isVeggie(String id) throws SQLException {
 		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT veggie from items_ingredients JOIN ingredients i " +
-						"on i.id = items_ingredients.ingredients_id  WHERE items_id = '"+id+"'";
+		String QRY = "SELECT veggie from items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id  WHERE items_id = '" + id + "'";
 		ResultSet rs = statement.executeQuery(QRY);
-		while (rs.next()) { if (rs.getInt("veggie") == 0) return false; }
+		while (rs.next()) {
+			if (rs.getInt("veggie") == 0)
+				return false;
+		}
 		return true;
 	}
 
 	private int getListPizza(String id) throws SQLException {
 		java.sql.Statement statement = conn.createStatement();
-		String QRY = "SELECT price from items_ingredients JOIN ingredients i " +
-					"on i.id = items_ingredients.ingredients_id  WHERE items_id = '"+id+"'";
+		String QRY = "SELECT price from items_ingredients JOIN ingredients i " + "on i.id = items_ingredients.ingredients_id  WHERE items_id = '" + id + "'";
 		ResultSet rs = statement.executeQuery(QRY);
 		int price = 0;
-		while (rs.next()) { price += rs.getInt("price"); }
+		while (rs.next()) {
+			price += rs.getInt("price");
+		}
 		return price;
 	}
 
@@ -114,20 +138,24 @@ public class App {
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(listDrinkSQL);
 		while (rs.next()) {
+
 			String drinkName = rs.getString("name");
-			double price = (double) rs.getInt("price")/100;
+			int price = rs.getInt("price");
 			int id = rs.getInt("id");
-			System.out.println("[ Drink: "+drinkName+" -- Price: "+price+"-- ID: "+id+ " ]");
+			System.out.println("[ Drink: " + drinkName + " -- Price: " + price + "-- ID: " + id + " ]");
 		}
 	}
+
 	/*
-		FOR DESSERTS
+	 * FOR DRINKS
 	 */
 	private void getListDesserts() throws Exception {
 		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(dessertSQL);
 		String QRY = "SELECT id name, price FROM items WHERE items_type_id = '3'";
-		ResultSet rs = statement.executeQuery(QRY);
+		rs = statement.executeQuery(QRY);
 		while (rs.next()) {
+			int id = rs.getInt("id");
 			String dessertName = rs.getString("name");
 			int price = rs.getInt("price");
 
@@ -136,44 +164,31 @@ public class App {
 		}
 	}
 
-		Connection conn = null;
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(URL, user, passwd);
-			String user = "root";
-			conn = DriverManager.getConnection(url, user, password);
-		} catch (SQLException ex) {
-			// handle any errors
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-		}
-		return conn;
-	}
-
 	private void manageCustomer() throws Exception {
-		loop:while (true) {
+		Scanner s;
+		loop: while (true) {
 			System.out.println("\ninside manageCustomer method");
 			System.out.println("1 - Create a new customer");
 			System.out.println("2 - Delete Customer ");
 			System.out.println("3 - List All customers ");
 			System.out.println("0 - Exit ");
-			Scanner s = new Scanner(System.in);
+			s = new Scanner(System.in);
 			String str = s.nextLine();
 			switch (str) {
-				case "1":
-					newCustomer();
-					break;
-				case "2":
-					deleteCustomer();
-					break;
-				case "3":
-					listAllCustomer();
-					break;
-				case "0":
-					break loop;
+			case "1":
+				newCustomer();
+				break;
+			case "2":
+				deleteCustomer();
+				break;
+			case "3":
+				listAllCustomer();
+				break;
+			case "0":
+				break loop;
 			}
 		}
+		s.close();
 	}
 
 	private void listAllCustomer() throws SQLException {
@@ -188,7 +203,7 @@ public class App {
 			String email = rs.getString("email");
 			String phone = rs.getString("phone");
 
-			System.out.println("[Customer id: "+id+" Name: "+name+" email: "+email+"Phone num: "+phone);
+			System.out.println("[Customer id: " + id + " Name: " + name + " email: " + email + "Phone num: " + phone);
 		}
 
 	}
@@ -201,7 +216,7 @@ public class App {
 
 		s.close();
 		Statement stmt = conn.createStatement();
-		stmt.executeQuery((deleteCustomerSQL+id));
+		stmt.executeQuery((deleteCustomerSQL + id));
 
 	}
 
@@ -222,7 +237,7 @@ public class App {
 		String password = s.nextLine();
 		s.close();
 
-		createCustomer(conn, name,postalCode, address, email, phone, password);
+		createCustomer(conn, name, postalCode, address, email, phone, password);
 
 	}
 
@@ -243,45 +258,48 @@ public class App {
 
 	}
 
-	private void makeOrder() throws SQLException{
+	private void makeOrder() throws Exception {
 
-		if (!login()){
+		if (!login()) {
 			System.out.println("Login failed :(");
 			return;
 		}
 		System.out.println("inside makeOrder methd");
-		listPizza(); listDrinks(); listDesserts();
+		listPizza();
+		getListDrinks();
+		getListDesserts();
 		System.out.println("Type the id of the products you wish to purchase. When you are done, type 'd' ");
-		boolean loop = true;
-		while (true){
-			Scanner scan = new Scanner(System.in);
-			String s = scan.nextLine();
-			if (s.equals("d")){
+		Scanner s;
+		while (true) {
+			s = new Scanner(System.in);
+			String string = s.nextLine();
+			if (string.equals("d")) {
 				break;
-			}
-			else {
-				//add item to orders_items
+			} else {
+				// add item to orders_items
 			}
 		}
+		s.close();
 	}
 
-	public boolean login() throws SQLException{
+	public boolean login() throws SQLException {
 		System.out.println("Login needed!\nEmail:");
 		Scanner s = new Scanner(System.in);
 		String email = s.nextLine();
 		System.out.println("Password:");
 		String pass = s.nextLine();
 		Statement stmt = conn.createStatement();
-		String QRY = "SELECT * FROM customers WHERE email='"+email+"' AND passwd='"+pass+"'";
+		String QRY = "SELECT * FROM customers WHERE email='" + email + "' AND passwd='" + pass + "'";
 		ResultSet rs = stmt.executeQuery(QRY);
 		boolean success = false;
-		while (rs.next()){
+		while (rs.next()) {
 			customerId += rs.getInt("id");
 			customerPhone = rs.getString("phone");
 			customerPostcode = rs.getString("postal_code");
 			customerEmail = rs.getString("email");
 			success = true;
 		}
+		s.close();
 		return success;
 	}
 
