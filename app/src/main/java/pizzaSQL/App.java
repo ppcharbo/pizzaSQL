@@ -3,6 +3,7 @@
  */
 package pizzaSQL;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -21,7 +22,10 @@ public class App {
 	public static final String deleteCustomerSQL = "DELETE FROM customers WHERE id =";
 	public Connection conn;
 
-	protected static int currentCustomerId = 0;
+	protected static String customerId = "";
+	protected static String customerEmail = "";
+	protected static String customerPhone = "";
+	protected static String customerPostcode = "";
 
 	public void mainLoop() throws Exception {
 		conn = makeConnection(user,URL,passwd);
@@ -234,12 +238,46 @@ public class App {
 	}
 
 	private void makeOrder() throws SQLException{
-		System.out.println("inside makeOrder methd");
-		listPizza();
-		listDrinks();
 
+		if (!login()){
+			System.out.println("Login failed :(");
+			return;
+		}
+		System.out.println("inside makeOrder methd");
+		listPizza(); listDrinks(); listDesserts();
+		System.out.println("Type the id of the products you wish to purchase. When you are done, type 'd' ");
+		boolean loop = true;
+		while (true){
+			Scanner scan = new Scanner(System.in);
+			String s = scan.nextLine();
+			if (s.equals("d")){
+				break;
+			}
+			else {
+				//add item to orders_items
+			}
+		}
 	}
 
+	public boolean login() throws SQLException{
+		System.out.println("Login needed!\nEmail:");
+		Scanner s = new Scanner(System.in);
+		String email = s.nextLine();
+		System.out.println("Password:");
+		String pass = s.nextLine();
+		Statement stmt = conn.createStatement();
+		String QRY = "SELECT * FROM customers WHERE email='"+email+"' AND passwd='"+pass+"'";
+		ResultSet rs = stmt.executeQuery(QRY);
+		boolean success = false;
+		while (rs.next()){
+			customerId += rs.getInt("id");
+			customerPhone = rs.getString("phone");
+			customerPostcode = rs.getString("postal_code");
+			customerEmail = rs.getString("email");
+			success = true;
+		}
+		return success;
+	}
 
 	public static void main(String[] args) throws Exception {
 		new App().mainLoop();
