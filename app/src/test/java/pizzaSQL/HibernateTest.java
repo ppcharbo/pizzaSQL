@@ -259,6 +259,7 @@ public class HibernateTest {
 
 //  update riders set cameBack= NOW() - INTERVAL 60 minute where id=1;
 
+//reset all riders
 // update riders set cameBack= NOW() - INTERVAL 60 minute , available=1;
 
 

@@ -394,6 +394,7 @@ public class Controller {
 					rider.setAvailable(false);
 					rider.setCameBack(cameBack);
 					hibernate.updateRidersStatus(rider);
+					hibernate.assignRiderToOrder(o,rider);
 				}
 			}
 		}

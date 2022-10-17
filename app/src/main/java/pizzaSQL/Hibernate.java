@@ -45,6 +45,7 @@ public class Hibernate {
 	public static final String udpateRiderStatusSQL="update riders set available = ?,cameBack = NOW() + INTERVAL 30 minute where id=?";
 	public static final String resetRiderComeBack="select * from riders where cameBack < NOW()";
 	public static final String closeOrderSQL="update orders set delivered=1 where idrider=?";
+	public static final String updateOrderDriverSQL="update orders set  picked_up_at = NOW() , idrider=?   where id=?";
 	public Connection conn;
 
 	public Hibernate(String user, String passwd, String URL) throws ClassNotFoundException {
@@ -562,6 +563,16 @@ public class Hibernate {
 		ps.executeUpdate();
 
 		
+	}
+
+	public void assignRiderToOrder(Order o, Rider rider) throws Exception {
+		
+		// closeOrderSQL
+				PreparedStatement ps = conn.prepareStatement(updateOrderDriverSQL);
+				ps.setInt(1, rider.getId());
+				ps.setInt(2, o.getId());
+				ps.executeUpdate();
+
 	}
 
 }
