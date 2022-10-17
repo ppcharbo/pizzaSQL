@@ -251,6 +251,8 @@ public class Controller {
 				// add item to orders_items
 			}
 		}
+
+		
 //		Now we must handle the customer
 		Customer newCustomer = null;
 		loop: while (true) {
@@ -276,12 +278,41 @@ public class Controller {
 			}
 
 		}
-		completCheckOut(basket, newCustomer);
+
+		System.out.println("Please enter your discount code (enter if you dont have )");
+
+		String discount = s.nextLine();
+		Boolean duplicated = hibernate.findDiscountDuplicate(discount);
+		if (duplicated) {
+			System.err.println("Discout code already used ");
+			discount = null;
+		}
+
+		 String newdiscount = generateDiscout(basket);
+		if (discount != null)
+			System.out.printf("Your discount Code is  %s ", newdiscount);
+
+		completCheckOut(basket, newCustomer, discount);
 
 	}
 
-	private void completCheckOut(Collection<Item> basket, Customer newCustomer) throws Exception {
-		hibernate.completCheckOut(basket, newCustomer);
+	private String generateDiscout(Collection<Item> basket) {
+
+		int count = 0;
+
+		for (Item item : basket) {
+			if (item.getItemType() == ItemType.pizza)
+				count++;
+		}
+		if (count > 10)
+
+			return RandomString.getAlphaNumericString(4);
+
+		return null;
+	}
+
+	private void completCheckOut(Collection<Item> basket, Customer newCustomer, String discount) throws Exception {
+		hibernate.completCheckOut(basket, newCustomer, discount);
 
 	}
 

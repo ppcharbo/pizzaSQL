@@ -27,6 +27,7 @@ public class Hibernate {
 	public static final String priceIngredientSQL = "SELECT price from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?";
 	public static final String createOrdersSQL = "insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
 	public static final String createOrdersDetailSQL = "insert into orders_items(orders_id,items_id) values(?,?)";
+	public static final String findDiscountCodeSQL= "select * from orders where discount_code= ? ";
 	private Connection conn;
 
 	public Hibernate(String user, String passwd, String URL) throws ClassNotFoundException {
@@ -126,16 +127,21 @@ public class Hibernate {
 	}
 
 	public Customer createCustomer(String name, String postalCode, String address, String email, String phone, String password) throws SQLException {
-		PreparedStatement prepareStatement = conn.prepareStatement(ADD_CUSTOMER);
-		prepareStatement.setString(1, name);
-		prepareStatement.setString(2, postalCode);
-		prepareStatement.setString(3, address);
-		prepareStatement.setString(4, email);
-		prepareStatement.setString(5, phone);
-		prepareStatement.setString(6, password);
-		prepareStatement.executeUpdate();
+		PreparedStatement ps = conn.prepareStatement(ADD_CUSTOMER,Statement.RETURN_GENERATED_KEYS);
+		ps.setString(1, name);
+		ps.setString(2, postalCode);
+		ps.setString(3, address);
+		ps.setString(4, email);
+		ps.setString(5, phone);
+		ps.setString(6, password);
+		ps.executeUpdate();
 
-		return new Customer("-1", name, Integer.valueOf(postalCode), address, email, phone, password);
+			ResultSet generatedKeys = ps.getGeneratedKeys();
+			Long customerID = null;
+		if(generatedKeys.next())
+			 customerID = generatedKeys.getLong(1);
+			 
+		return new Customer(String.valueOf(customerID), name, Integer.valueOf(postalCode), address, email, phone, password);
 	}
 
 	public Collection<Item> findAllDrinks() throws Exception {
@@ -229,13 +235,13 @@ public class Hibernate {
 		return null;
 	}
 
-	public void completCheckOut(Collection<Item> basket, Customer customer) throws Exception {
+	public void completCheckOut(Collection<Item> basket, Customer customer,String discount_code) throws Exception {
 
 		int idcustomer = Integer.valueOf(customer.getId());
 		Timestamp ready_at= new Timestamp(System.currentTimeMillis());
 		Timestamp picked_up_at=null;
 		boolean delivered=false;
-		String discount_code=null;
+		 
 		double price=findPrice(basket);
 		//insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
 		PreparedStatement ps = conn.prepareStatement(createOrdersSQL,Statement.RETURN_GENERATED_KEYS);
@@ -269,5 +275,15 @@ public class Hibernate {
 		}
 		
 		return price;
+	}
+
+	public Boolean findDiscountDuplicate(String discount) throws Exception {
+		PreparedStatement ps = conn.prepareStatement(findDiscountCodeSQL);
+		ps.setString(1, discount);
+		 ResultSet execute = ps.executeQuery();
+		 
+		 
+		 return execute.next();
+		
 	}
 }

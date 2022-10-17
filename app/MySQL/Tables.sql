@@ -50,8 +50,7 @@ ALTER TABLE `items` ADD FOREIGN KEY (`items_type_id`) REFERENCES `items_type` (`
 
 CREATE TABLE `orders_items` (
   `orders_id` int,
-  `items_id` int,
-  PRIMARY KEY (`orders_id`, `items_id`)
+  `items_id` int
 );
 
 ALTER TABLE `orders_items` ADD FOREIGN KEY (`orders_id`) REFERENCES `orders` (`id`);
