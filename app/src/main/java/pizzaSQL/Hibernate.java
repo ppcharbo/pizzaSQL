@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Scanner;
 
 import pizzaSQL.model.Customer;
 import pizzaSQL.model.Ingredients;
@@ -19,6 +20,7 @@ import pizzaSQL.model.Rider;
 
 public class Hibernate {
 	public static final String listAllCustomersSQL = "SELECT * FROM customers";
+	public static final String findOrderLessThen5Min="select * from orders where    NOW() < ready_at - INTERVAL 5  minute";
 	public static final String listAllOrdersSQL = "SELECT * FROM Orders";
 	public static final String findCustomerByIDSQL = "select * from customers where id=?";
 	public static final String findItemByIDSQL = "select * from items where id=?";
@@ -95,6 +97,7 @@ public class Hibernate {
 			Boolean isVeggie = isVeggie(id);
 
 			double price = getPriceOfIngredients(id) / 100;
+//			FIXME
 			price = price * 1.4;
 //			VAT 9%  so we have to multiply ..
 			price = price * 1.09;
@@ -230,7 +233,7 @@ public class Hibernate {
 			String name = rs.getString("name");
 			double price = rs.getDouble("price");
 			Item item = new Item(id, type, name, price);
-			Collection <Ingredients> ingredient=findAllIngredients(id);
+			Collection<Ingredients> ingredient = findAllIngredients(id);
 			item.setIngredients(ingredient);
 			return item;
 
@@ -238,8 +241,6 @@ public class Hibernate {
 
 		return null;
 	}
-
-	 
 
 	private ItemType getItemType(Integer itemTypeId) {
 
@@ -259,7 +260,8 @@ public class Hibernate {
 	public Order completCheckOut(Collection<Item> basket, Customer customer, String discount_code) throws Exception {
 
 		int idcustomer = Integer.valueOf(customer.getId());
-		Timestamp ready_at = new Timestamp(System.currentTimeMillis());
+//		600000 millisecond for the 10 minute of preparartion 
+		Timestamp ready_at = new Timestamp(System.currentTimeMillis() + 600000);
 		Timestamp picked_up_at = null;
 		boolean delivered = false;
 
@@ -441,5 +443,26 @@ public class Hibernate {
 		}
 
 		return null;
+	}
+
+	public Collection<Order> findAllOrdersInFiveMinutes() throws Exception {
+		 
+		Collection<Order> ret = new ArrayList<Order>();
+
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(findOrderLessThen5Min);
+		while (rs.next()) {
+
+			Integer id = rs.getInt("id");
+			Order order =findOrderById(id);
+			ret.add(order );
+
+		}
+		return ret;
+	}
+
+	public void deleteOrders(Integer valueOf) {
+		// TODO Auto-generated method stub
+
 	}
 }

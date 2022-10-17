@@ -50,6 +50,7 @@ public class Controller {
 					4 - List all available Desserts
 					5 - List of current orders
 					6 - Manage Customers
+					7 - Cancel Orders
 					0 - Exit\s""");
 			s = new Scanner(System.in);
 			String str = s.nextLine();
@@ -76,11 +77,24 @@ public class Controller {
 			case "6":
 				manageCustomer(s);
 				break;
+			case "7 ":
+				cancelOrders(s);
 			case "0":
 				break loop;
 			}
 		}
 		s.close();
+	}
+
+	private void cancelOrders(Scanner s) {
+
+		Collection<Order> collection = hibernate.findAllOrdersInFiveMinutes();
+		System.out.println("please select the orther you want to cancel");
+		for (Order order : collection) {
+			System.out.printf("%d - %s -%s", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress());
+		}
+		String str = s.nextLine();
+		hibernate.deleteOrders(Integer.valueOf(str));
 	}
 
 	private void getListDesserts(boolean showId) throws Exception {
@@ -249,12 +263,12 @@ public class Controller {
 							pizzaInBasket = true;
 						basket.add(item);
 					}
-					
+
 				} catch (Exception e) {
-					
+
 				}
 				System.out.println(basket);
-				
+
 			}
 		}
 
@@ -292,7 +306,7 @@ public class Controller {
 				System.err.println("Discout code already used ");
 				discountCode = null;
 			}
-			
+
 		}
 
 		String newdiscount = generateDiscout(basket);
@@ -314,7 +328,6 @@ public class Controller {
 
 		}
 		System.out.printf("Price : %6.2f € \n ", order.getPrice());
-		
 
 	}
 

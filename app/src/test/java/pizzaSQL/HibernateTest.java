@@ -67,8 +67,6 @@ public class HibernateTest {
 		assertTrue(id.equals(o.getId()));
 	}
 
-	
-
 	@Test
 	public void testFindItemsByOrderId() throws Exception {
 		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
@@ -80,6 +78,7 @@ public class HibernateTest {
 		}
 
 	}
+
 	@Test
 	public void testPrintOrder() throws Exception {
 		Controller controller = new Controller();
@@ -92,11 +91,11 @@ public class HibernateTest {
 
 	@Test
 	public void testFindPrice() throws Exception {
-		 
+
 		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
 		Integer id = 1;
-		Collection<Item> basket=new ArrayList<Item>();
-		
+		Collection<Item> basket = new ArrayList<Item>();
+
 		Item item = hibernate.findItemById(id);
 		Collection<Ingredients> ingredients = item.getIngredients();
 		for (Ingredients i : ingredients) {
@@ -107,16 +106,31 @@ public class HibernateTest {
 		System.err.println(price);
 
 	}
-	
+
 	@Test
 	public void findIngredientByItem() throws Exception {
 		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
 		Integer id = 1;
 		Collection<Ingredients> collection = hibernate.findAllIngredients(id);
 		System.out.println(collection);
-		 
 
 	}
-	
+
+	@Test
+	public void findAllOrdersInFiveMinutes() throws Exception {
+		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
+		Collection<Item> basket = new ArrayList<Item>();
+		basket.add(hibernate.findItemById(1));
+		Customer customer = hibernate.findCustomerById(1);
+		Order completCheckOut = hibernate.completCheckOut(basket, customer, null);
+		System.out.println("Created order "+completCheckOut);
+		Collection<Order> collection = hibernate.findAllOrdersInFiveMinutes();
+		for (Order order : collection) {
+			if (order.getId().equals(completCheckOut.getId()))
+				return ;
+		}
+		fail("Could not find order to cancel ");
+
+	}
 
 }
