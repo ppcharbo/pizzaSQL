@@ -77,8 +77,9 @@ public class Controller {
 			case "6":
 				manageCustomer(s);
 				break;
-			case "7 ":
+			case "7":
 				cancelOrders(s);
+				break;
 			case "0":
 				break loop;
 			}
@@ -91,10 +92,20 @@ public class Controller {
 		Collection<Order> collection = hibernate.findAllOrdersInFiveMinutes();
 		System.out.println("please select the orther you want to cancel");
 		for (Order order : collection) {
-			System.out.printf("%d - %s -%s", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress());
+			System.out.printf(" order id= %d Customer=  %s Address= -%s\n", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress());
 		}
-		String str = s.nextLine();
-		hibernate.deleteOrders(Integer.valueOf(str));
+		Integer valueOf = null;
+		try {
+			while (valueOf == null) {
+				String str = s.nextLine();
+				valueOf = Integer.valueOf(str);
+
+			}
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+		hibernate.deleteOrders(valueOf);
 	}
 
 	private void getListDesserts(boolean showId) throws Exception {

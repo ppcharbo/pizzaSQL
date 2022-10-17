@@ -300,7 +300,7 @@ public class Hibernate {
 		for (Item item : basket) {
 			price += item.getPrice();
 		}
-		if (discount_code != null) {
+		if (discount_code != "") {
 			double newPrice = price * 0.9;
 			System.out.printf("\n applying discount code to price:%6.2f --> new price is %6.2f \n ", price, newPrice);
 		}
