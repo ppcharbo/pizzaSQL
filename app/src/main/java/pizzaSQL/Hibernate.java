@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -23,7 +24,8 @@ public class Hibernate {
 	public static final String dessertSQL = "SELECT id,name, price FROM items WHERE items_type_id = '3'";
 	public static final String isVeggieSQL = "SELECT veggie from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?";
 	public static final String priceIngredientSQL = "SELECT price from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?";
-
+	public static final String createOrdersSQL = "insert into orders(idcustomer,idrider,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?,?)";
+	public static final String createOrdersDetailSQL = "insert into orders_items(orders_id,items_id) values(?,?)";
 	private Connection conn;
 
 	public Hibernate(String user, String passwd, String URL) throws ClassNotFoundException {
@@ -104,27 +106,25 @@ public class Hibernate {
 	}
 
 	private Collection<Ingredients> findAllIngredients(String pizzaId) throws Exception {
-		
-		
-		Collection<Ingredients> ret= new ArrayList<Ingredients>();
-		
-	 
-		 PreparedStatement stmt = conn.prepareStatement(findIngredientSQL);
-		 stmt.setString(1, pizzaId);
+
+		Collection<Ingredients> ret = new ArrayList<Ingredients>();
+
+		PreparedStatement stmt = conn.prepareStatement(findIngredientSQL);
+		stmt.setString(1, pizzaId);
 		ResultSet rs = stmt.executeQuery();
 		while (rs.next()) {
 			String id = rs.getString("id");
-			String name=rs.getString("name");
-			Double price =rs.getDouble("price");
-			Boolean isVeggie=rs.getBoolean("veggie");
-			ret.add(new Ingredients(id,name,price,isVeggie));
+			String name = rs.getString("name");
+			Double price = rs.getDouble("price");
+			Boolean isVeggie = rs.getBoolean("veggie");
+			ret.add(new Ingredients(id, name, price, isVeggie));
 
 		}
-		
+
 		return ret;
 	}
 
-	public void createCustomer(String name, String postalCode, String address, String email, String phone, String password) throws SQLException {
+	public Customer createCustomer(String name, String postalCode, String address, String email, String phone, String password) throws SQLException {
 		PreparedStatement prepareStatement = conn.prepareStatement(ADD_CUSTOMER);
 		prepareStatement.setString(1, name);
 		prepareStatement.setString(2, postalCode);
@@ -133,12 +133,14 @@ public class Hibernate {
 		prepareStatement.setString(5, phone);
 		prepareStatement.setString(6, password);
 		prepareStatement.executeUpdate();
+
+		return new Customer("-1", name, Integer.valueOf(postalCode), address, email, phone, password);
 	}
 
 	public Collection<Item> findAllDrinks() throws Exception {
-		 
-		Collection<Item> ret = new  ArrayList<Item>();
-		
+
+		Collection<Item> ret = new ArrayList<Item>();
+
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(listDrinkSQL);
 		while (rs.next()) {
@@ -151,15 +153,15 @@ public class Hibernate {
 //			VAT 9%  so we have to multiply ..
 			price = price * 1.09;
 			ret.add(new Item(id, ItemType.drink, name, price, false));
-			
+
 		}
-		return ret ;
+		return ret;
 	}
 
 	public Collection<Item> findAllDessert() throws Exception {
-		 
-Collection<Item> ret = new  ArrayList<Item>();
-		
+
+		Collection<Item> ret = new ArrayList<Item>();
+
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(dessertSQL);
 		while (rs.next()) {
@@ -172,14 +174,14 @@ Collection<Item> ret = new  ArrayList<Item>();
 //			VAT 9%  so we have to multiply ..
 			price = price * 1.09;
 			ret.add(new Item(id, ItemType.drink, name, price, false));
-			
+
 		}
-		return ret ;
+		return ret;
 	}
 
 	public Collection<Customer> findAllCustomers() throws Exception {
-Collection<Customer> ret = new  ArrayList<Customer>();
-		
+		Collection<Customer> ret = new ArrayList<Customer>();
+
 		java.sql.Statement statement = conn.createStatement();
 		ResultSet rs = statement.executeQuery(listAllCustomersSQL);
 		while (rs.next()) {
@@ -192,10 +194,67 @@ Collection<Customer> ret = new  ArrayList<Customer>();
 			String phone = rs.getString("phone");
 			String password = rs.getString("passwd");
 //			margin for profit so we have to multiply ..
-			 
-			ret.add(new Customer(id, name,postalCode,address,email,phone,password));
-			
+
+			ret.add(new Customer(id, name, postalCode, address, email, phone, password));
+
 		}
-		return ret ;
+		return ret;
+	}
+
+	public Item findItemById(String id) throws Exception {
+		Collection<Item> findAllPizza = findAllPizza();
+		Collection<Item> findAllDrinks = findAllDrinks();
+		Collection<Item> findAllDessert = findAllDessert();
+		Collection<Item> all = new ArrayList<Item>();
+		all.addAll(findAllPizza);
+		all.addAll(findAllDrinks);
+		all.addAll(findAllDessert);
+		for (Item item : all) {
+			if (item.getId().equals(id))
+				return item;
+		}
+
+		return null;
+	}
+
+	public Customer findCustomerById(String id) throws Exception {
+		Collection<Customer> findAllCustomers = findAllCustomers();
+		for (Customer customer : findAllCustomers) {
+			if (customer.getId().equals(id)) {
+				return customer;
+
+			}
+		}
+		return null;
+	}
+
+	public void completCheckOut(Collection<Item> basket, Customer customer) throws Exception {
+
+		int idcustomer = Integer.valueOf(customer.getId());
+		int idrider = -1;
+		Timestamp ready_at= new Timestamp(System.currentTimeMillis());
+		Timestamp picked_up_at=null;
+		boolean delivered=false;
+		String discount_code=null;
+		PreparedStatement prepareStatement = conn.prepareStatement(createOrdersSQL);
+		prepareStatement.setInt(1, idcustomer);
+		prepareStatement.setInt(2, idrider);
+		prepareStatement.setDouble(3, idrider);
+		prepareStatement.setTimestamp(4, ready_at);
+		prepareStatement.setTimestamp(5, picked_up_at);
+		prepareStatement.setBoolean(6, delivered);
+		prepareStatement.setString(7, discount_code);
+		prepareStatement.executeUpdate();
+		ResultSet generatedKeys = prepareStatement.getGeneratedKeys();
+		int orderId = generatedKeys.getInt(0);
+		
+		for (Item item : basket) {
+			prepareStatement = conn.prepareStatement(createOrdersDetailSQL);
+			prepareStatement.setInt(1, orderId);
+			prepareStatement.setInt(1, Integer.valueOf(item.getId()));
+			prepareStatement.executeUpdate();
+		}
+		
+
 	}
 }

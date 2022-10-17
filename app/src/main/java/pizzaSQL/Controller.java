@@ -5,12 +5,14 @@ package pizzaSQL;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
 
 import pizzaSQL.model.Customer;
 import pizzaSQL.model.Ingredients;
 import pizzaSQL.model.Item;
+import pizzaSQL.model.ItemType;
 
 public class Controller {
 	/*
@@ -194,7 +196,7 @@ public class Controller {
 
 	}
 
-	private void newCustomer(Scanner s) throws SQLException {
+	private Customer newCustomer(Scanner s) throws SQLException {
 		System.out.println("inside new Customer methode");
 		System.out.println("insert name ");
 
@@ -210,7 +212,8 @@ public class Controller {
 		System.out.println("insert a password ");
 		String password = s.nextLine();
 
-		hibernate.createCustomer(name, postalCode, address, email, phone, password);
+		Customer co = hibernate.createCustomer(name, postalCode, address, email, phone, password);
+		return co;
 
 	}
 
@@ -225,17 +228,60 @@ public class Controller {
 		getListPizza(true);
 		getListDrinks(true);
 		getListDesserts(true);
+		Collection<Item> basket = new ArrayList<Item>();
 		System.out.println("Type the id of the products you wish to purchase. When you are done, type 'd' ");
-
+		Boolean pizzaInBasket = false;
 		while (true) {
-
 			String string = s.nextLine();
+
 			if (string.equals("d")) {
-				break;
+				if (pizzaInBasket) {
+					break;
+				} else
+
+					System.out.println("You must orther at least one pizza ");
 			} else {
+				Item item = hibernate.findItemById(string);
+				if (item != null) {
+					if (item.getItemType() == ItemType.pizza)
+						pizzaInBasket = true;
+					basket.add(item);
+				}
+				System.out.println(basket);
 				// add item to orders_items
 			}
 		}
+//		Now we must handle the customer
+		Customer newCustomer = null;
+		loop: while (true) {
+			System.out.println("\n Please choose your customer");
+			System.out.println("0 - Create Customer ");
+			System.out.println("2 - List All customers ");
+
+			String str = s.nextLine();
+			switch (str) {
+			case "0":
+				newCustomer = newCustomer(s);
+
+				break;
+			case "2":
+				listAllCustomer();
+				System.out.println("Please enter customer ID");
+				String id = s.nextLine();
+				newCustomer = hibernate.findCustomerById(id);
+				if (newCustomer == null) {
+					System.err.println("we could not find your id" + id);
+				} else
+					break loop;
+			}
+
+		}
+		completCheckOut(basket, newCustomer);
+
+	}
+
+	private void completCheckOut(Collection<Item> basket, Customer newCustomer) throws Exception {
+		hibernate.completCheckOut(basket, newCustomer);
 
 	}
 

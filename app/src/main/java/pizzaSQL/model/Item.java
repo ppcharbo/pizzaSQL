@@ -20,8 +20,14 @@ public class Item {
 		this.isVeggie = isVeggie;
 	}
 
+	@Override
+	public String toString() {
+
+		return name;
+	}
+
 	public String getId() {
-		 
+
 		return id;
 	}
 
@@ -33,8 +39,6 @@ public class Item {
 		return price;
 	}
 
-
-
 	public Boolean isVeggie() {
 		return isVeggie;
 	}
@@ -43,16 +47,15 @@ public class Item {
 		return itemType;
 
 	}
-	
-	 public Collection<Ingredients> getIngredients() {
-		 
+
+	public Collection<Ingredients> getIngredients() {
+
 		return ingredients;
 	}
 
 	public void setIngredients(Collection<Ingredients> ingredients) {
 		this.ingredients = ingredients;
-		
-		
+
 	}
 
 }

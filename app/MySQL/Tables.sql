@@ -35,15 +35,15 @@ CREATE TABLE `riders` (
 );
 
 CREATE TABLE `orders` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `idcustomer` int NOT NULL,
   `idrider` int NOT NULL,
   `price` double NOT NULL,
   `ready_at` timestamp NOT NULL,
   `picked_up_at` timestamp DEFAULT NULL,
   `delivered` tinyint DEFAULT NULL,
-  `discount_code` varchar(10),
-  PRIMARY KEY (`id`, `idcustomer`, `discount_code`)
+  `discount_code` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`, `idcustomer`)
 );
 
 ALTER TABLE `items` ADD FOREIGN KEY (`items_type_id`) REFERENCES `items_type` (`id`);

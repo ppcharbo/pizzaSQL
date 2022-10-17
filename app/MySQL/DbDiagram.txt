@@ -36,14 +36,14 @@ Table "riders" {
 }
 
 Table "orders" {
-  "id" int [pk, not null]
+  "id" int [pk, not null ,increment]
   "idcustomer" int [pk, not null]
   "idrider" int [not null]
   "price" double [not null]
   "ready_at" timestamp [not null]
   "picked_up_at" timestamp [default: NULL]
   "delivered" tinyint [default: NULL]
-  "discount_code" varchar(10) [pk]
+  "discount_code" varchar(10) [default: NULL]
 }
 
 Ref: orders.id <> items.id
@@ -51,3 +51,6 @@ Ref: orders.id <> items.id
 Ref: orders.idrider > riders.id
 Ref: customers.id <> orders.id
 Ref: items.id <> ingredients.id
+
+
+
