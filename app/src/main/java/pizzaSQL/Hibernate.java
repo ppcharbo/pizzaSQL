@@ -22,6 +22,8 @@ public class Hibernate {
 	public static final String listAllCustomersSQL = "SELECT * FROM customers";
 	public static final String findOrderLessThen5Min="select * from orders where    NOW() < ready_at - INTERVAL 5  minute";
 	public static final String listAllOrdersSQL = "SELECT * FROM Orders";
+	public static final String deleteOrderDetail = "delete from orders_items where orders_id=?";
+	public static final String deleteOrderById = "delete from orders  where id=?";
 	public static final String findCustomerByIDSQL = "select * from customers where id=?";
 	public static final String findItemByIDSQL = "select * from items where id=?";
 	public static final String findItemsByOrdersSQL = "select * from orders_items where orders_id=?";
@@ -461,8 +463,20 @@ public class Hibernate {
 		return ret;
 	}
 
-	public void deleteOrders(Integer valueOf) {
-		// TODO Auto-generated method stub
+	public void deleteOrders(Integer id) throws Exception {
+		
+		PreparedStatement ps = conn.prepareStatement(deleteOrderDetail);
+		ps.setInt(1, id);
+		 ps.executeUpdate();
+		
+		
+		ps = conn.prepareStatement(deleteOrderById);
+		ps.setInt(1, id);
+		ps.executeUpdate();
+	
+		
+		
+
 
 	}
 }

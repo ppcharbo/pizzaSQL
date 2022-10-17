@@ -123,14 +123,38 @@ public class HibernateTest {
 		basket.add(hibernate.findItemById(1));
 		Customer customer = hibernate.findCustomerById(1);
 		Order completCheckOut = hibernate.completCheckOut(basket, customer, null);
-		System.out.println("Created order "+completCheckOut);
+		System.out.println("Created order " + completCheckOut);
 		Collection<Order> collection = hibernate.findAllOrdersInFiveMinutes();
 		for (Order order : collection) {
 			if (order.getId().equals(completCheckOut.getId()))
-				return ;
+				return;
 		}
 		fail("Could not find order to cancel ");
 
+	}
+
+	@Test
+	public void deleteOrdersInFiveMinutes() throws Exception {
+		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
+		Collection<Item> basket = new ArrayList<Item>();
+		basket.add(hibernate.findItemById(1));
+		Customer customer = hibernate.findCustomerById(1);
+		Order completCheckOut = hibernate.completCheckOut(basket, customer, null);
+		System.out.println("Created order " + completCheckOut);
+		Collection<Order> collection = hibernate.findAllOrdersInFiveMinutes();
+		Order toDelete = null;
+		for (Order order : collection) {
+			if (order.getId().equals(completCheckOut.getId())) {
+				toDelete = order;
+				break;
+			}
+		}
+		assertNotNull(toDelete);
+
+		hibernate.deleteOrders(toDelete.getId());
+
+		Order deletedOrder = hibernate.findOrderById(toDelete.getId());
+		assertNull(deletedOrder);
 	}
 
 }

@@ -86,7 +86,7 @@ public class Controller {
 		s.close();
 	}
 
-	private void cancelOrders(Scanner s) {
+	private void cancelOrders(Scanner s) throws Exception {
 
 		Collection<Order> collection = hibernate.findAllOrdersInFiveMinutes();
 		System.out.println("please select the orther you want to cancel");
