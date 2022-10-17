@@ -256,7 +256,7 @@ public class Hibernate {
 		
 		if(generatedKeys.next()){
 			Long sorderId = generatedKeys.getLong(1);
-			System.out.println(sorderId);
+			 
 			for (Item item : basket) {
 				ps = conn.prepareStatement(createOrdersDetailSQL);
 				ps.setLong(1, sorderId);
