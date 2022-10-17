@@ -69,11 +69,13 @@ public class Item {
 
 	public Boolean isVeggie() {
 
-		for (Ingredients i : ingredients) {
-			if (i.getIsVeggie())
-				return true;
-		}
-		return false;
+		boolean isVeggie = true;
+		
+		for (Ingredients i : ingredients) 
+			 
+	    isVeggie =isVeggie && i.getIsVeggie();
+		
+		return isVeggie;
 	}
 
 }
