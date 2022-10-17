@@ -256,7 +256,7 @@ public class HibernateTest {
 
 	}
 }
-
+//   Alice back in the time 
 //  update riders set cameBack= NOW() - INTERVAL 60 minute where id=1;
 
 //reset all riders
