@@ -1,7 +1,12 @@
 package pizzaSQL;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -24,17 +29,6 @@ public class HibernateTest {
 	}
 
 	@Test
-	public void testFindOrder() throws Exception {
-		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
-
-		Integer id = 1;
-		Order o = hibernate.findOrderById(id);
-		System.out.println(o);
-		assertTrue(id.equals(o.getId()));
-		assertEquals(14, o.getDetails().size());
-	}
-
-	@Test
 	public void testCustomer() throws Exception {
 		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
 
@@ -48,7 +42,7 @@ public class HibernateTest {
 		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
 
 		String name = RandomString.getAlphaNumericString(5);
-		Integer postalCode = 2020;
+		Integer postalCode = 1100;
 		String address = RandomString.getAlphaNumericString(15);
 		String email = RandomString.getAlphaNumericString(15);
 		String phone = RandomString.getAlphaNumericString(15);
@@ -65,18 +59,6 @@ public class HibernateTest {
 		Integer id = 1;
 		Rider o = hibernate.findRiderById(id);
 		assertTrue(id.equals(o.getId()));
-	}
-
-	@Test
-	public void testFindItemsByOrderId() throws Exception {
-		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
-		Integer id = 1;
-		Collection<Item> collection = hibernate.findItemsByOrder(id);
-		assertEquals(14, collection.size());
-		for (Item item : collection) {
-			System.out.println(item);
-		}
-
 	}
 
 	@Test
@@ -171,6 +153,102 @@ public class HibernateTest {
 				return;
 		}
 		fail("Could not find pending order ");
+
+	}
+
+	@Test
+	public void testFindFreeRiders() throws Exception {
+
+		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
+
+		Collection<Rider> findFreeRiders = hibernate.findFreeRiders();
+		for (Rider rider : findFreeRiders) {
+			System.out.println(rider);
+		}
+	}
+
+	@Test
+	public void testUpdateRidersStatus() throws Exception {
+
+		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
+
+		Collection<Rider> findFreeRiders = hibernate.findFreeRiders();
 		
+		Rider rider = findFreeRiders.iterator().next();
+		rider.setAvailable(false);
+		hibernate.UpdateRidersStatus(rider);
+		rider=hibernate.findRiderById(rider.getId());
+		Boolean availabe = rider.getAvailable();
+		assertFalse(availabe);
+		
+	}
+
+	@Test
+	public void testResetRiderCameBack() throws Exception {
+
+		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
+
+		Collection<Rider> findFreeRiders = hibernate.findFreeRiders();
+		
+		Rider rider = findFreeRiders.iterator().next();
+		rider.setAvailable(false);
+		hibernate.UpdateRidersStatus(rider);
+		rider=hibernate.findRiderById(rider.getId());
+		Boolean availabe = rider.getAvailable();
+		assertFalse(availabe);
+		String sql = "update riders set cameBack = NOW() - INTERVAL 60  minute where id=?";
+		PreparedStatement st = hibernate.conn.prepareStatement(sql);
+		st.setInt(1, rider.getId());
+		st.executeUpdate();
+		
+		hibernate.resetRiderCameBack();
+		findFreeRiders = hibernate.findFreeRiders();
+		for (Rider rider2 : findFreeRiders) {
+			
+			if(rider2.getId().equals(rider.getId()))
+				return;
+		}
+		
+		
+		
+		fail("no free rider founds ");
+		
+	}
+
+	
+	
+
+	@Test
+	public void testAssignCurrentOrder() throws Exception {
+
+		Controller controller = new Controller();
+		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
+		// just reset all riders 
+         Collection <Rider> allRiders=hibernate.findAllRiders();
+         for (Rider rider : allRiders) {
+        	 rider.setAvailable(true);
+			hibernate.UpdateRidersStatus(rider);
+		}
+		
+		// first we must create the customer 
+		String name = "pippo";
+		Integer postalCode = 1100;
+		String address = "Nouvlle";
+		String email = RandomString.getAlphaNumericString(15);
+		String phone = RandomString.getAlphaNumericString(15);
+		String password = RandomString.getAlphaNumericString(15);
+		
+		Customer customer = hibernate.createCustomer(name, postalCode, address, email, phone, password);
+		
+		//we need to create an order 
+		
+		Collection<Item> basket = new ArrayList<Item>();
+		basket.add(hibernate.findItemById(1));
+		Order completCheckOut = hibernate.completCheckOut(basket, customer, null);
+		System.out.println("Created order " + completCheckOut);
+		Order myorder = hibernate.findOrderById(completCheckOut.getId());
+
+		controller.listOfOrder();
+
 	}
 }

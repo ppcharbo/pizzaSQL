@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Scanner;
 
 import pizzaSQL.model.Customer;
 import pizzaSQL.model.Ingredients;
@@ -20,6 +19,7 @@ import pizzaSQL.model.Rider;
 
 public class Hibernate {
 	public static final String listAllCustomersSQL = "SELECT * FROM customers";
+	public static final String findAllRidersSQL= "SELECT * FROM riders";
 	public static final String findOrderLessThen5Min = "select * from orders where    NOW() < ready_at - INTERVAL 5  minute";
 	public static final String listAllOrdersSQL = "SELECT * FROM Orders";
 	public static final String deleteOrderDetail = "delete from orders_items where orders_id=?";
@@ -41,7 +41,10 @@ public class Hibernate {
 	public static final String createOrdersDetailSQL = "insert into orders_items(orders_id,items_id) values(?,?)";
 	public static final String findDiscountCodeSQL = "select * from orders where discount_code= ? ";
 	public static final String findAllPendingOrdersSQL = "select * from orders where delivered='false'";
-	private Connection conn;
+	public static final String findAllFreeRiderSQL = "select * from riders where available=true";
+	public static final String udpateRiderStatusSQL="update riders set available = ?,cameBack = NOW() + INTERVAL 30 minute where id=?";
+	public static final String resetRiderComeBack="select * from riders where cameBack < NOW()";
+	public Connection conn;
 
 	public Hibernate(String user, String passwd, String URL) throws ClassNotFoundException {
 		conn = makeConnection(user, URL, passwd);
@@ -385,7 +388,8 @@ public class Hibernate {
 			Boolean available = rs.getBoolean("available");
 			Integer postalCode = rs.getInt("postal_code");
 
-			return new Rider(id, name, available, postalCode);
+			Timestamp cameBack = rs.getTimestamp("cameBack");
+			return new Rider(id, name, cameBack, available, postalCode);
 
 		}
 
@@ -491,4 +495,62 @@ public class Hibernate {
 		}
 		return ret;
 	}
+
+	public Collection<Rider> findFreeRiders() throws Exception {
+		
+		Collection<Rider> ret = new ArrayList<Rider>();
+
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(findAllFreeRiderSQL);
+		while (rs.next()) {
+			Integer id = rs.getInt("id");
+			Rider rider = findRiderById(id);
+			ret.add(rider);
+		}
+		return ret;
+	}
+
+	public void UpdateRidersStatus(Rider rider) throws Exception {
+		
+		PreparedStatement ps = conn.prepareStatement(udpateRiderStatusSQL);
+		ps.setBoolean(1, rider.getAvailable());
+		ps.setInt(2, rider.getId());
+		ps.executeUpdate();
+
+		
+	}
+
+	public Collection<Rider> findAllRiders() throws Exception {
+		 
+		Collection<Rider> ret = new ArrayList<Rider>();
+
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(findAllRidersSQL);
+		while (rs.next()) {
+			Integer id = rs.getInt("id");
+			Rider rider = findRiderById(id);
+			ret.add(rider);
+		}
+		return ret;
+	}
+
+	public Collection<Rider> resetRiderCameBack() throws Exception {
+		 
+		Collection<Rider> ret = new ArrayList<Rider>();
+
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(resetRiderComeBack);
+		while (rs.next()) {
+			Integer id = rs.getInt("id");
+			Rider rider = findRiderById(id);
+			ret.add(rider);
+		}
+		for (Rider rider : ret) {
+			rider.setAvailable(true);
+			rider.setCameBack(null);
+			UpdateRidersStatus(rider);
+		}
+		return ret;
+	}
+
 }

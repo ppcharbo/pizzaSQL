@@ -5,6 +5,7 @@ package pizzaSQL;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
@@ -14,6 +15,7 @@ import pizzaSQL.model.Ingredients;
 import pizzaSQL.model.Item;
 import pizzaSQL.model.ItemType;
 import pizzaSQL.model.Order;
+import pizzaSQL.model.Rider;
 
 public class Controller {
 	/*
@@ -243,13 +245,6 @@ public class Controller {
 
 	}
 
-	private void listOfOrder() throws Exception {
-		System.out.println("inside listOfOrder methd");
-		Collection<Order> collection = hibernate.findAllPendingOrder();
-		for (Order order : collection) {
-			System.out.printf("id : %d customer name :%s  address : %s\n", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress());
-		}
-	}
 
 	private void makeOrder(Scanner s) throws Exception {
 
@@ -370,4 +365,47 @@ public class Controller {
 	public static void main(String[] args) throws Exception {
 		new Controller().mainLoop(false);
 	}
+	
+	public void listOfOrder() throws Exception {
+		
+		
+		
+		System.out.println("inside listOfOrder methd");
+		Collection<Order> ordersList = hibernate.findAllPendingOrder();
+		for (Order order : ordersList) {
+			System.out.printf("id : %d customer name :%s  address : %s code %s \n", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress(),order.getCustomer().getPostalCode());
+		}
+		System.out.println("finding free riders ");
+		Collection <Rider> freeRider=hibernate.findFreeRiders();
+		System.out.println("Found the following free riders ");
+		for (Rider rider : freeRider) {
+			System.out.println(rider);
+		}
+		System.out.println("now we check for each free rider if there's an order to delivers");
+		
+		for (Order o : ordersList) {
+			freeRider=hibernate.findFreeRiders();
+			for (Rider rider : freeRider) {
+				if(rider.getPostalCode().equals(o.getCustomer().getPostalCode()))
+				{
+					//the rider will came back in 30 min 
+					Timestamp cameBack=new Timestamp(System.currentTimeMillis()+1800000);
+					System.out.printf("Rider %s is free so will deliver order %d \n", rider.getName(),o.getId());
+					rider.setAvailable(false);
+					rider.setCameBack(cameBack);
+					hibernate.UpdateRidersStatus(rider);
+				}
+			}
+		}
+		
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
 }
