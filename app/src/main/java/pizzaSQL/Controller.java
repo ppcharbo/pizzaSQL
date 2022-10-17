@@ -13,6 +13,7 @@ import pizzaSQL.model.Customer;
 import pizzaSQL.model.Ingredients;
 import pizzaSQL.model.Item;
 import pizzaSQL.model.ItemType;
+import pizzaSQL.model.Order;
 
 public class Controller {
 	/*
@@ -88,12 +89,12 @@ public class Controller {
 
 		for (Item item : items) {
 
-			String id = item.getId();
+			Integer id = item.getId();
 			String name = item.getName();
 			Double price = item.getPrice();
 
 			if (showId)
-				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, name, price);
+				System.out.printf("%2d - %-25s  price : %4.2f € \n", id, name, price);
 			else
 				System.out.printf("%-25s  price : %4.2f € \n", name, price);
 
@@ -107,12 +108,12 @@ public class Controller {
 
 		for (Item item : items) {
 
-			String id = item.getId();
+			Integer id = item.getId();
 			String name = item.getName();
 			Double price = item.getPrice();
 
 			if (showId)
-				System.out.printf("%2s - %-25s  price : %4.2f € \n", id, name, price);
+				System.out.printf("%2d - %-25s  price : %4.2f € \n", id, name, price);
 			else
 				System.out.printf("%-25s  price : %4.2f € \n", name, price);
 
@@ -129,7 +130,7 @@ public class Controller {
 
 		for (Item item : items) {
 
-			String id = item.getId();
+			Integer id = item.getId();
 			String name = item.getName();
 			Double price = item.getPrice();
 			Boolean isVeggie = item.isVeggie();
@@ -145,7 +146,7 @@ public class Controller {
 			listIng = new String(sb);
 
 			if (showId)
-				System.out.printf("%2s - %-25s  price : %4.2f € veggie : %-3s (%s) \n", id, name, price, isVeggie, listIng);
+				System.out.printf("%2d - %-25s  price : %4.2f € veggie : %-3s (%s) \n", id, name, price, isVeggie, listIng);
 			else
 				System.out.printf("%-25s  price : %4.2f € veggie : %-3s (%s) \n", name, price, isVeggie, listIng);
 
@@ -241,7 +242,7 @@ public class Controller {
 
 					System.out.println("You must orther at least one pizza ");
 			} else {
-				Item item = hibernate.findItemById(string);
+				Item item = hibernate.findItemById(Integer.valueOf(string));
 				if (item != null) {
 					if (item.getItemType() == ItemType.pizza)
 						pizzaInBasket = true;
@@ -292,7 +293,20 @@ public class Controller {
 		if (!newdiscount.equals("-1"))
 			System.out.printf("Your discount Code is  %s ", newdiscount);
 
-		completCheckOut(basket, newCustomer, discount);
+		Order order = completCheckOut(basket, newCustomer, discount);
+
+		printConfirmation(order);
+	}
+
+	public void printConfirmation(Order order) {
+		System.out.printf("Order id %d \n", order.getId());
+		System.out.printf("Client Name : %s\n", order.getCustomer().getName());
+		System.out.printf("Address : %s \n ", order.getCustomer().getAddress());
+		Collection<Item> details = order.getDetails();
+		for (Item item : details) {
+			System.out.printf("%s \n ", item.getName());
+
+		}
 
 	}
 
@@ -311,8 +325,9 @@ public class Controller {
 		return new String("-1");
 	}
 
-	private void completCheckOut(Collection<Item> basket, Customer newCustomer, String discount) throws Exception {
-		hibernate.completCheckOut(basket, newCustomer, discount);
+	private Order completCheckOut(Collection<Item> basket, Customer newCustomer, String discount) throws Exception {
+
+		return hibernate.completCheckOut(basket, newCustomer, discount);
 
 	}
 

@@ -20,8 +20,11 @@ import pizzaSQL.model.Rider;
 public class Hibernate {
 	public static final String listAllCustomersSQL = "SELECT * FROM customers";
 	public static final String listAllOrdersSQL = "SELECT * FROM Orders";
-	public static final String findCustomerSQL = "select * from customers where id=?";
+	public static final String findCustomerByIDSQL = "select * from customers where id=?";
+	public static final String findItemByIDSQL = "select * from items where id=?";
+	public static final String findItemsByOrdersSQL = "select * from orders_items where orders_id=?";
 	public static final String findOrderSQL = "select * from orders where id=?";
+	public static final String findRiderSQL = "select * from riders where id=?";
 	public static final String list_pizzasSQL = "SELECT id, name FROM items WHERE items_type_id = '1'";
 	public static final String ADD_CUSTOMER = "insert into customers(name,postal_code,adress,email,phone,passwd) values (?,?,?,?,?,?);";
 	public static final String findIngredientSQL = "SELECT id,name,price,veggie FROM items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id WHERE items_id =?";
@@ -53,9 +56,9 @@ public class Hibernate {
 		return conn;
 	}
 
-	private int getPriceOfIngredients(String id) throws SQLException {
+	private int getPriceOfIngredients(Integer id) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement(priceIngredientSQL);
-		statement.setString(1, id);
+		statement.setInt(1, id);
 		ResultSet rs = statement.executeQuery();
 
 		int price = 0;
@@ -65,10 +68,10 @@ public class Hibernate {
 		return price;
 	}
 
-	private boolean isVeggie(String id) throws SQLException {
+	private boolean isVeggie(Integer id) throws SQLException {
 
 		PreparedStatement statement = conn.prepareStatement(isVeggieSQL);
-		statement.setString(1, id);
+		statement.setInt(1, id);
 
 		ResultSet rs = statement.executeQuery();
 		while (rs.next()) {
@@ -87,7 +90,7 @@ public class Hibernate {
 		ResultSet resultPizza = statement.executeQuery(QRY);
 		while (resultPizza.next()) {
 
-			String id = resultPizza.getString("id");
+			Integer id = resultPizza.getInt("id");
 			String name = resultPizza.getString("name");
 			Boolean isVeggie = isVeggie(id);
 
@@ -96,7 +99,7 @@ public class Hibernate {
 //			VAT 9%  so we have to multiply ..
 			price = price * 1.09;
 
-			Item pizza = new Item(id, ItemType.pizza, name, price, isVeggie);
+			Item pizza = new Item(id, ItemType.pizza, name, price);
 			Collection<Ingredients> ingredients = findAllIngredients(id);
 			pizza.setIngredients(ingredients);
 			coll.add(pizza);
@@ -112,12 +115,12 @@ public class Hibernate {
 		return coll;
 	}
 
-	private Collection<Ingredients> findAllIngredients(String pizzaId) throws Exception {
+	private Collection<Ingredients> findAllIngredients(Integer pizzaId) throws Exception {
 
 		Collection<Ingredients> ret = new ArrayList<Ingredients>();
 
 		PreparedStatement stmt = conn.prepareStatement(findIngredientSQL);
-		stmt.setString(1, pizzaId);
+		stmt.setInt(1, pizzaId);
 		ResultSet rs = stmt.executeQuery();
 		while (rs.next()) {
 			String id = rs.getString("id");
@@ -158,14 +161,14 @@ public class Hibernate {
 		ResultSet rs = statement.executeQuery(listDrinkSQL);
 		while (rs.next()) {
 
-			String id = rs.getString("id");
+			Integer id = rs.getInt("id");
 			String name = rs.getString("name");
 			double price = rs.getInt("price");
 //			margin for profit so we have to multiply ..
 			price = price * 1.4;
 //			VAT 9%  so we have to multiply ..
 			price = price * 1.09;
-			ret.add(new Item(id, ItemType.drink, name, price, false));
+			ret.add(new Item(id, ItemType.drink, name, price));
 
 		}
 		return ret;
@@ -179,14 +182,14 @@ public class Hibernate {
 		ResultSet rs = statement.executeQuery(dessertSQL);
 		while (rs.next()) {
 
-			String id = rs.getString("id");
+			Integer id = rs.getInt("id");
 			String name = rs.getString("name");
 			double price = rs.getInt("price");
 //			margin for profit so we have to multiply ..
 			price = price * 1.4;
 //			VAT 9%  so we have to multiply ..
 			price = price * 1.09;
-			ret.add(new Item(id, ItemType.drink, name, price, false));
+			ret.add(new Item(id, ItemType.drink, name, price));
 
 		}
 		return ret;
@@ -214,23 +217,46 @@ public class Hibernate {
 		return ret;
 	}
 
-	public Item findItemById(String id) throws Exception {
-		Collection<Item> findAllPizza = findAllPizza();
-		Collection<Item> findAllDrinks = findAllDrinks();
-		Collection<Item> findAllDessert = findAllDessert();
-		Collection<Item> all = new ArrayList<Item>();
-		all.addAll(findAllPizza);
-		all.addAll(findAllDrinks);
-		all.addAll(findAllDessert);
-		for (Item item : all) {
-			if (item.getId().equals(id))
-				return item;
+	public Item findItemById(Integer id) throws Exception {
+		
+		
+		PreparedStatement ps = conn.prepareStatement(findItemByIDSQL);
+		ps.setInt(1, id);
+
+		ResultSet rs = ps.executeQuery();
+		if (rs.next()) {
+
+
+			
+			Integer itemTypeId=rs.getInt("items_type_id");
+			ItemType type=getItemType(itemTypeId);
+			String name=rs.getString("name");
+			double price=rs.getDouble("price");
+			return new Item(id, type, name, price);
+
 		}
 
+		
+		
 		return null;
 	}
 
-	public void completCheckOut(Collection<Item> basket, Customer customer, String discount_code) throws Exception {
+	private ItemType getItemType(Integer itemTypeId) {
+		
+		switch (itemTypeId) {
+		case 0: 
+			return ItemType.pizza;
+		case 1: 
+			return ItemType.drink;
+		case 2: 
+			return ItemType.dessert;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + itemTypeId);
+		}
+		
+	}
+
+	public Order completCheckOut(Collection<Item> basket, Customer customer, String discount_code) throws Exception {
 
 		int idcustomer = Integer.valueOf(customer.getId());
 		Timestamp ready_at = new Timestamp(System.currentTimeMillis());
@@ -248,19 +274,20 @@ public class Hibernate {
 		ps.setString(6, discount_code);
 		ps.executeUpdate();
 		ResultSet generatedKeys = ps.getGeneratedKeys();
-		Long orderId;
+		Integer orderId;
 
 		if (generatedKeys.next()) {
-			orderId = generatedKeys.getLong(1);
+			orderId = generatedKeys.getInt(1);
 
 			for (Item item : basket) {
 				ps = conn.prepareStatement(createOrdersDetailSQL);
-				ps.setLong(1, orderId);
+				ps.setInt(1, orderId);
 				ps.setInt(2, Integer.valueOf(item.getId()));
 				ps.executeUpdate();
 			}
+			return findOrderById(orderId);
 		}
-
+		return null;
 	}
 
 	private double findPrice(Collection<Item> basket) {
@@ -308,7 +335,11 @@ public class Hibernate {
 			Timestamp deliveredAt = rs.getTimestamp("picked_up_at");
 			String discoutCode = rs.getString("discount_code");
 			Boolean delivered = rs.getBoolean("delivered");
-			return new Order(id, customer, rider, price, readtAt, deliveredAt, delivered, discoutCode);
+
+			Collection<Item> items = findItemsByOrder(id);
+			Order order = new Order(id, customer, rider, price, readtAt, deliveredAt, delivered, discoutCode);
+			order.setDetails(items);
+			return order;
 
 		}
 
@@ -316,9 +347,27 @@ public class Hibernate {
 
 	}
 
+	public Collection<Item> findItemsByOrder(Integer id) throws Exception {
+		Collection<Item> ret = new ArrayList<Item>();
+
+		PreparedStatement ps = conn.prepareStatement(findItemsByOrdersSQL);
+		ps.setInt(1, id);
+
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()) {
+
+			Integer itemId = rs.getInt("items_id");
+
+			Item item = findItemById(itemId);
+			ret.add(item);
+		}
+
+		return ret;
+	}
+
 	public Rider findRiderById(Integer id) throws Exception {
 
-		PreparedStatement ps = conn.prepareStatement(findCustomerSQL);
+		PreparedStatement ps = conn.prepareStatement(findRiderSQL);
 		ps.setInt(1, id);
 
 		ResultSet rs = ps.executeQuery();
@@ -371,7 +420,7 @@ public class Hibernate {
 	 */
 	public Customer findCustomerById(Integer id) throws Exception {
 
-		PreparedStatement ps = conn.prepareStatement(findCustomerSQL);
+		PreparedStatement ps = conn.prepareStatement(findCustomerByIDSQL);
 		ps.setInt(1, id);
 
 		ResultSet rs = ps.executeQuery();
