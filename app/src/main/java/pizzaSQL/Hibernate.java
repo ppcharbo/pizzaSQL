@@ -14,9 +14,14 @@ import pizzaSQL.model.Customer;
 import pizzaSQL.model.Ingredients;
 import pizzaSQL.model.Item;
 import pizzaSQL.model.ItemType;
+import pizzaSQL.model.Order;
+import pizzaSQL.model.Rider;
 
 public class Hibernate {
 	public static final String listAllCustomersSQL = "SELECT * FROM customers";
+	public static final String listAllOrdersSQL = "SELECT * FROM Orders";
+	public static final String findCustomerSQL = "select * from customers where id=?";
+	public static final String findOrderSQL = "select * from orders where id=?";
 	public static final String list_pizzasSQL = "SELECT id, name FROM items WHERE items_type_id = '1'";
 	public static final String ADD_CUSTOMER = "insert into customers(name,postal_code,adress,email,phone,passwd) values (?,?,?,?,?,?);";
 	public static final String findIngredientSQL = "SELECT id,name,price,veggie FROM items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id WHERE items_id =?";
@@ -27,7 +32,7 @@ public class Hibernate {
 	public static final String priceIngredientSQL = "SELECT price from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?";
 	public static final String createOrdersSQL = "insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
 	public static final String createOrdersDetailSQL = "insert into orders_items(orders_id,items_id) values(?,?)";
-	public static final String findDiscountCodeSQL= "select * from orders where discount_code= ? ";
+	public static final String findDiscountCodeSQL = "select * from orders where discount_code= ? ";
 	private Connection conn;
 
 	public Hibernate(String user, String passwd, String URL) throws ClassNotFoundException {
@@ -126,22 +131,23 @@ public class Hibernate {
 		return ret;
 	}
 
-	public Customer createCustomer(String name, String postalCode, String address, String email, String phone, String password) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(ADD_CUSTOMER,Statement.RETURN_GENERATED_KEYS);
+	public Customer createCustomer(String name, Integer postalCode, String address, String email, String phone, String password) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(ADD_CUSTOMER, Statement.RETURN_GENERATED_KEYS);
 		ps.setString(1, name);
-		ps.setString(2, postalCode);
+		ps.setInt(2, postalCode);
 		ps.setString(3, address);
 		ps.setString(4, email);
 		ps.setString(5, phone);
 		ps.setString(6, password);
 		ps.executeUpdate();
 
-			ResultSet generatedKeys = ps.getGeneratedKeys();
-			Long customerID = null;
-		if(generatedKeys.next())
-			 customerID = generatedKeys.getLong(1);
-			 
-		return new Customer(String.valueOf(customerID), name, Integer.valueOf(postalCode), address, email, phone, password);
+		ResultSet generatedKeys = ps.getGeneratedKeys();
+		Integer customerID = null;
+		if (generatedKeys.next())
+			customerID = generatedKeys.getInt(1);
+
+		return new Customer(customerID, name, postalCode, address, email, phone, password);
+		// return new Customer(customerID, name, postalCode, address, email, phone, password);
 	}
 
 	public Collection<Item> findAllDrinks() throws Exception {
@@ -193,9 +199,9 @@ public class Hibernate {
 		ResultSet rs = statement.executeQuery(listAllCustomersSQL);
 		while (rs.next()) {
 
-			String id = rs.getString("id");
+			Integer id = rs.getInt("id");
 			String name = rs.getString("name");
-			int postalCode = rs.getInt("postal_code");
+			Integer postalCode = rs.getInt("postal_code");
 			String address = rs.getString("adress");
 			String email = rs.getString("email");
 			String phone = rs.getString("phone");
@@ -224,27 +230,16 @@ public class Hibernate {
 		return null;
 	}
 
-	public Customer findCustomerById(String id) throws Exception {
-		Collection<Customer> findAllCustomers = findAllCustomers();
-		for (Customer customer : findAllCustomers) {
-			if (customer.getId().equals(id)) {
-				return customer;
-
-			}
-		}
-		return null;
-	}
-
-	public void completCheckOut(Collection<Item> basket, Customer customer,String discount_code) throws Exception {
+	public void completCheckOut(Collection<Item> basket, Customer customer, String discount_code) throws Exception {
 
 		int idcustomer = Integer.valueOf(customer.getId());
-		Timestamp ready_at= new Timestamp(System.currentTimeMillis());
-		Timestamp picked_up_at=null;
-		boolean delivered=false;
-		 
-		double price=findPrice(basket);
-		//insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
-		PreparedStatement ps = conn.prepareStatement(createOrdersSQL,Statement.RETURN_GENERATED_KEYS);
+		Timestamp ready_at = new Timestamp(System.currentTimeMillis());
+		Timestamp picked_up_at = null;
+		boolean delivered = false;
+
+		double price = findPrice(basket);
+		// insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(createOrdersSQL, Statement.RETURN_GENERATED_KEYS);
 		ps.setInt(1, idcustomer);
 		ps.setDouble(2, price);
 		ps.setTimestamp(3, ready_at);
@@ -253,37 +248,146 @@ public class Hibernate {
 		ps.setString(6, discount_code);
 		ps.executeUpdate();
 		ResultSet generatedKeys = ps.getGeneratedKeys();
-		
-		if(generatedKeys.next()){
-			Long sorderId = generatedKeys.getLong(1);
-			 
+		Long orderId;
+
+		if (generatedKeys.next()) {
+			orderId = generatedKeys.getLong(1);
+
 			for (Item item : basket) {
 				ps = conn.prepareStatement(createOrdersDetailSQL);
-				ps.setLong(1, sorderId);
+				ps.setLong(1, orderId);
 				ps.setInt(2, Integer.valueOf(item.getId()));
 				ps.executeUpdate();
 			}
-			}
-	
+		}
+
 	}
 
 	private double findPrice(Collection<Item> basket) {
-		
-		Double price=0.0;
+
+		Double price = 0.0;
 		for (Item item : basket) {
-			price +=item.getPrice();
+			price += item.getPrice();
 		}
-		
+
 		return price;
 	}
 
 	public Boolean findDiscountDuplicate(String discount) throws Exception {
 		PreparedStatement ps = conn.prepareStatement(findDiscountCodeSQL);
 		ps.setString(1, discount);
-		 ResultSet execute = ps.executeQuery();
-		 
-		 
-		 return execute.next();
-		
+		ResultSet execute = ps.executeQuery();
+
+		return execute.next();
+
+	}
+
+	/*
+	 * 
+	 * +---------------+-------------+------+-----+---------+----------------+ | Field | Type | Null | Key | Default | Extra | +---------------+-------------+------+-----+---------+----------------+ | id | int | NO | PRI | NULL | auto_increment | | idcustomer | int | NO | PRI | NULL | | | idrider | int
+	 * | YES | MUL | NULL | | | price | double | NO | | NULL | | | ready_at | timestamp | NO | | NULL | | | picked_up_at | timestamp | YES | | NULL | | | delivered | tinyint | YES | | NULL | | | discount_code | varchar(10) | YES | | NULL | |
+	 * +---------------+-------------+------+-----+---------+----------------+
+	 * 
+	 * 
+	 */
+	public Order findOrderById(Integer id) throws Exception {
+		PreparedStatement ps = conn.prepareStatement(findOrderSQL);
+		ps.setInt(1, id);
+
+		ResultSet rs = ps.executeQuery();
+		if (rs.next()) {
+
+			Integer riderId = rs.getInt("idrider");
+			Integer customerId = rs.getInt("idcustomer");
+
+			Rider rider = findRiderById(riderId);
+			Customer customer = findCustomerById(customerId);
+
+			Double price = rs.getDouble("price");
+			Timestamp readtAt = rs.getTimestamp("ready_at");
+			Timestamp deliveredAt = rs.getTimestamp("picked_up_at");
+			String discoutCode = rs.getString("discount_code");
+			Boolean delivered = rs.getBoolean("delivered");
+			return new Order(id, customer, rider, price, readtAt, deliveredAt, delivered, discoutCode);
+
+		}
+
+		return null;
+
+	}
+
+	public Rider findRiderById(Integer id) throws Exception {
+
+		PreparedStatement ps = conn.prepareStatement(findCustomerSQL);
+		ps.setInt(1, id);
+
+		ResultSet rs = ps.executeQuery();
+		if (rs.next()) {
+
+			String name = rs.getString("name");
+			Boolean available = rs.getBoolean("available");
+			Integer postalCode = rs.getInt("postal_code");
+
+			return new Rider(id, name, available, postalCode);
+
+		}
+
+		return null;
+
+	}
+
+	/*
+	 * id | int | NO | PRI | NULL | auto_increment | | idcustomer | int | NO | PRI | NULL | | | idrider | int | YES | MUL | NULL | | | price | double | NO | | NULL | | | ready_at | timestamp | NO | | NULL | | | picked_up_at | timestamp | YES | | NULL | | | delivered | tinyint | YES | | NULL | | |
+	 * discount_code | varchar(10) | YES | | NULL | |
+	 * 
+	 */
+	private Collection<Order> findAllOrders() throws Exception {
+		Collection<Order> ret = new ArrayList<Order>();
+
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(listAllCustomersSQL);
+		while (rs.next()) {
+
+			String id = rs.getString("id");
+			String name = rs.getString("name");
+			int postalCode = rs.getInt("postal_code");
+			String address = rs.getString("adress");
+			String email = rs.getString("email");
+			String phone = rs.getString("phone");
+			String password = rs.getString("passwd");
+//			margin for profit so we have to multiply ..
+
+			// ret.add(Order());
+
+		}
+		return ret;
+	}
+
+	/*
+	 * 
+	 * id | int | NO | PRI | NULL | auto_increment | | name | varchar(45) | YES | | NULL | | | postal_code | int | NO | | NULL | | | adress | varchar(45) | NO | | NULL | | | email | varchar(45) | NO | | NULL | | | phone | varchar(45) | YES | | NULL | | | passwd | varchar(45) | NO | | NULL | | +
+	 * 
+	 * 
+	 */
+	public Customer findCustomerById(Integer id) throws Exception {
+
+		PreparedStatement ps = conn.prepareStatement(findCustomerSQL);
+		ps.setInt(1, id);
+
+		ResultSet rs = ps.executeQuery();
+		if (rs.next()) {
+
+			String name = rs.getString("name");
+			Integer postalCode = rs.getInt("postal_code");
+			String address = rs.getString("adress");
+			String email = rs.getString("email");
+			String phone = rs.getString("phone");
+			String password = rs.getString("passwd");
+
+			return new Customer(id, name, postalCode, address, email, phone, password);
+
+		}
+
+		return null;
 	}
 }

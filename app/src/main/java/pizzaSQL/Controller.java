@@ -184,7 +184,7 @@ public class Controller {
 
 		for (Customer customer : list) {
 
-			String id = customer.getId();
+			Integer id = customer.getId();
 			String name = customer.getName();
 			String email = customer.getEmail();
 			String phone = customer.getPhone();
@@ -202,7 +202,7 @@ public class Controller {
 
 		String name = s.nextLine();
 		System.out.println("insert postal code ");
-		String postalCode = s.nextLine();
+		Integer postalCode = Integer.valueOf(s.nextLine());
 		System.out.println("insert address ");
 		String address = s.nextLine();
 		System.out.println("insert email ");
@@ -263,12 +263,11 @@ public class Controller {
 			switch (str) {
 			case "0":
 				newCustomer = newCustomer(s);
-
-				break;
+				break loop;
 			case "2":
 				listAllCustomer();
 				System.out.println("Please enter customer ID");
-				String id = s.nextLine();
+				Integer id = Integer.valueOf(s.nextLine());
 				newCustomer = hibernate.findCustomerById(id);
 				if (newCustomer == null) {
 					System.err.println("we could not find your id" + id);

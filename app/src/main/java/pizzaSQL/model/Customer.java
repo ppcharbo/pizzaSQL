@@ -2,15 +2,15 @@ package pizzaSQL.model;
 
 public class Customer {
 
-	private String id;
+	private Integer id;
 	private String name;
-	private int postalCode;
+	private Integer postalCode;
 	private String address;
 	private String email;
 	private String phone;
 	private String password;
 
-	public Customer(String id, String name, int postalCode, String address, String email, String phone, String password) {
+	public Customer(Integer id, String name, Integer postalCode, String address, String email, String phone, String password) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -21,7 +21,7 @@ public class Customer {
 		this.password = password;
 	}
 
-	public int getPostalCode() {
+	public Integer getPostalCode() {
 		return postalCode;
 	}
 
@@ -33,7 +33,7 @@ public class Customer {
 		return password;
 	}
 
-	public String getId() {
+	public Integer getId() {
 		return id;
 	}
 
