@@ -176,13 +176,17 @@ public class HibernateTest {
 		
 		Rider rider = findFreeRiders.iterator().next();
 		rider.setAvailable(false);
-		hibernate.UpdateRidersStatus(rider);
+		hibernate.updateRidersStatus(rider);
 		rider=hibernate.findRiderById(rider.getId());
 		Boolean availabe = rider.getAvailable();
 		assertFalse(availabe);
 		
 	}
 
+	
+	// reset all the riders 
+	// update riders set available=false and cameBack=null;
+	//update riders set available=1 ;
 	@Test
 	public void testResetRiderCameBack() throws Exception {
 
@@ -192,7 +196,7 @@ public class HibernateTest {
 		
 		Rider rider = findFreeRiders.iterator().next();
 		rider.setAvailable(false);
-		hibernate.UpdateRidersStatus(rider);
+		hibernate.updateRidersStatus(rider);
 		rider=hibernate.findRiderById(rider.getId());
 		Boolean availabe = rider.getAvailable();
 		assertFalse(availabe);
@@ -227,7 +231,7 @@ public class HibernateTest {
          Collection <Rider> allRiders=hibernate.findAllRiders();
          for (Rider rider : allRiders) {
         	 rider.setAvailable(true);
-			hibernate.UpdateRidersStatus(rider);
+			hibernate.updateRidersStatus(rider);
 		}
 		
 		// first we must create the customer 
@@ -252,3 +256,13 @@ public class HibernateTest {
 
 	}
 }
+
+//  update riders set cameBack= NOW() - INTERVAL 60 minute where id=1;
+
+// update riders set cameBack= NOW() - INTERVAL 60 minute , available=1;
+
+
+//update orders set ready_at= NOW() - INTERVAL 60 minute where id=28; 
+
+//update riders set cameBack= NOW()  - INTERVAL 60 minute where id=1;
+
