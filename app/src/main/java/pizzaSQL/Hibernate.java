@@ -40,10 +40,11 @@ public class Hibernate {
 	public static final String createOrdersSQL = "insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
 	public static final String createOrdersDetailSQL = "insert into orders_items(orders_id,items_id) values(?,?)";
 	public static final String findDiscountCodeSQL = "select * from orders where discount_code= ? ";
-	public static final String findAllPendingOrdersSQL = "select * from orders where delivered='false'";
+	public static final String findAllPendingOrdersSQL = "select * from orders where delivered=false and ready_at < NOW()";
 	public static final String findAllFreeRiderSQL = "select * from riders where available=true";
 	public static final String udpateRiderStatusSQL="update riders set available = ?,cameBack = NOW() + INTERVAL 30 minute where id=?";
 	public static final String resetRiderComeBack="select * from riders where cameBack < NOW()";
+	public static final String closeOrderSQL="update orders set delivered=1 where idrider=?";
 	public Connection conn;
 
 	public Hibernate(String user, String passwd, String URL) throws ClassNotFoundException {
@@ -510,7 +511,7 @@ public class Hibernate {
 		return ret;
 	}
 
-	public void UpdateRidersStatus(Rider rider) throws Exception {
+	public void updateRidersStatus(Rider rider) throws Exception {
 		
 		PreparedStatement ps = conn.prepareStatement(udpateRiderStatusSQL);
 		ps.setBoolean(1, rider.getAvailable());
@@ -548,9 +549,19 @@ public class Hibernate {
 		for (Rider rider : ret) {
 			rider.setAvailable(true);
 			rider.setCameBack(null);
-			UpdateRidersStatus(rider);
+			updateRidersStatus(rider);
+			updateOrderDelivered(rider);
 		}
 		return ret;
+	}
+
+	private void updateOrderDelivered(Rider rider) throws Exception {
+		// closeOrderSQL
+		PreparedStatement ps = conn.prepareStatement(closeOrderSQL);
+		ps.setInt(1, rider.getId());
+		ps.executeUpdate();
+
+		
 	}
 
 }

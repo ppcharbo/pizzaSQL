@@ -368,7 +368,7 @@ public class Controller {
 	
 	public void listOfOrder() throws Exception {
 		
-		
+		hibernate.resetRiderCameBack();
 		
 		System.out.println("inside listOfOrder methd");
 		Collection<Order> ordersList = hibernate.findAllPendingOrder();
@@ -393,7 +393,7 @@ public class Controller {
 					System.out.printf("Rider %s is free so will deliver order %d \n", rider.getName(),o.getId());
 					rider.setAvailable(false);
 					rider.setCameBack(cameBack);
-					hibernate.UpdateRidersStatus(rider);
+					hibernate.updateRidersStatus(rider);
 				}
 			}
 		}
