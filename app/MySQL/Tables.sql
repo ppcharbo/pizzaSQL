@@ -30,28 +30,28 @@ CREATE TABLE `customers` (
 CREATE TABLE `riders` (
   `id` int PRIMARY KEY NOT NULL,
   `name` varchar(45) DEFAULT NULL,
+  `cameBack` timestamp DEFAULT NULL,
   `available` tinyint NOT NULL DEFAULT "0",
   `postal_code` int NOT NULL
 );
 
 CREATE TABLE `orders` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `idcustomer` int NOT NULL,
-  `idrider` int NOT NULL,
+  `idrider` int DEFAULT null,
   `price` double NOT NULL,
   `ready_at` timestamp NOT NULL,
   `picked_up_at` timestamp DEFAULT NULL,
   `delivered` tinyint DEFAULT NULL,
-  `discount_code` varchar(10),
-  PRIMARY KEY (`id`, `idcustomer`, `discount_code`)
+  `discount_code` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`, `idcustomer`)
 );
 
 ALTER TABLE `items` ADD FOREIGN KEY (`items_type_id`) REFERENCES `items_type` (`id`);
 
 CREATE TABLE `orders_items` (
   `orders_id` int,
-  `items_id` int,
-  PRIMARY KEY (`orders_id`, `items_id`)
+  `items_id` int
 );
 
 ALTER TABLE `orders_items` ADD FOREIGN KEY (`orders_id`) REFERENCES `orders` (`id`);
