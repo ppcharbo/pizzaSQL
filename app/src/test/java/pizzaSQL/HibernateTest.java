@@ -2,11 +2,13 @@ package pizzaSQL;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.junit.Test;
 
 import pizzaSQL.model.Customer;
+import pizzaSQL.model.Ingredients;
 import pizzaSQL.model.Item;
 import pizzaSQL.model.Order;
 import pizzaSQL.model.Rider;
@@ -87,4 +89,34 @@ public class HibernateTest {
 		controller.printConfirmation(order);
 
 	}
+
+	@Test
+	public void testFindPrice() throws Exception {
+		 
+		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
+		Integer id = 1;
+		Collection<Item> basket=new ArrayList<Item>();
+		
+		Item item = hibernate.findItemById(id);
+		Collection<Ingredients> ingredients = item.getIngredients();
+		for (Ingredients i : ingredients) {
+			System.out.println(i);
+		}
+		basket.add(item);
+		double price = hibernate.findPrice(basket, "abdd");
+		System.err.println(price);
+
+	}
+	
+	@Test
+	public void findIngredientByItem() throws Exception {
+		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
+		Integer id = 1;
+		Collection<Ingredients> collection = hibernate.findAllIngredients(id);
+		System.out.println(collection);
+		 
+
+	}
+	
+
 }

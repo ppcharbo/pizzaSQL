@@ -2,6 +2,8 @@ package pizzaSQL.model;
 
 import java.util.Collection;
 
+import com.mysql.cj.PingTarget;
+
 public class Item {
 
 	private Integer id;
@@ -16,7 +18,7 @@ public class Item {
 		this.itemType = pizza;
 		this.name = name;
 		this.price = price;
-		 
+
 	}
 
 	@Override
@@ -35,10 +37,21 @@ public class Item {
 	}
 
 	public Double getPrice() {
+		if (itemType == ItemType.pizza) {
+			Double priceIng = 0.0;
+			for (Ingredients ing : ingredients) {
+
+				priceIng += ing.getPrice();
+			}
+// This is the gross margin of 40%
+			priceIng = priceIng * 1.4;
+//			We have to include the vat of 9 %
+			priceIng = priceIng * 1.09;
+			return priceIng / 100;
+		}
 		return price;
 	}
 
-	
 	public ItemType getItemType() {
 		return itemType;
 
@@ -55,8 +68,7 @@ public class Item {
 	}
 
 	public Boolean isVeggie() {
-		
-		
+
 		for (Ingredients i : ingredients) {
 			if (i.getIsVeggie())
 				return true;

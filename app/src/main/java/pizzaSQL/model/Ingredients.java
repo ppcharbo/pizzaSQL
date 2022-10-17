@@ -30,4 +30,9 @@ public class Ingredients {
 		this.isVeggie = isVeggie;
 	}
 
+	@Override
+	public String toString() {
+		return "Ingredients [id=" + id + ", name=" + name + ", price=" + price + ", isVeggie=" + isVeggie + "]";
+	}
+
 }

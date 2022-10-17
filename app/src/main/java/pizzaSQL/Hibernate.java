@@ -115,7 +115,7 @@ public class Hibernate {
 		return coll;
 	}
 
-	private Collection<Ingredients> findAllIngredients(Integer pizzaId) throws Exception {
+	Collection<Ingredients> findAllIngredients(Integer pizzaId) throws Exception {
 
 		Collection<Ingredients> ret = new ArrayList<Ingredients>();
 
@@ -218,42 +218,42 @@ public class Hibernate {
 	}
 
 	public Item findItemById(Integer id) throws Exception {
-		
-		
+
 		PreparedStatement ps = conn.prepareStatement(findItemByIDSQL);
 		ps.setInt(1, id);
 
 		ResultSet rs = ps.executeQuery();
 		if (rs.next()) {
 
-
-			
-			Integer itemTypeId=rs.getInt("items_type_id");
-			ItemType type=getItemType(itemTypeId);
-			String name=rs.getString("name");
-			double price=rs.getDouble("price");
-			return new Item(id, type, name, price);
+			Integer itemTypeId = rs.getInt("items_type_id");
+			ItemType type = getItemType(itemTypeId);
+			String name = rs.getString("name");
+			double price = rs.getDouble("price");
+			Item item = new Item(id, type, name, price);
+			Collection <Ingredients> ingredient=findAllIngredients(id);
+			item.setIngredients(ingredient);
+			return item;
 
 		}
 
-		
-		
 		return null;
 	}
 
+	 
+
 	private ItemType getItemType(Integer itemTypeId) {
-		
+
 		switch (itemTypeId) {
-		case 0: 
+		case 1:
 			return ItemType.pizza;
-		case 1: 
+		case 2:
 			return ItemType.drink;
-		case 2: 
+		case 3:
 			return ItemType.dessert;
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + itemTypeId);
 		}
-		
+
 	}
 
 	public Order completCheckOut(Collection<Item> basket, Customer customer, String discount_code) throws Exception {
@@ -263,7 +263,7 @@ public class Hibernate {
 		Timestamp picked_up_at = null;
 		boolean delivered = false;
 
-		double price = findPrice(basket);
+		double price = findPrice(basket, discount_code);
 		// insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
 		PreparedStatement ps = conn.prepareStatement(createOrdersSQL, Statement.RETURN_GENERATED_KEYS);
 		ps.setInt(1, idcustomer);
@@ -290,13 +290,16 @@ public class Hibernate {
 		return null;
 	}
 
-	private double findPrice(Collection<Item> basket) {
+	public double findPrice(Collection<Item> basket, String discount_code) {
 
 		Double price = 0.0;
 		for (Item item : basket) {
 			price += item.getPrice();
 		}
-
+		if (discount_code != null) {
+			double newPrice = price * 0.9;
+			System.out.printf("\n applying discount code to price:%6.2f --> new price is %6.2f \n ", price, newPrice);
+		}
 		return price;
 	}
 

@@ -242,14 +242,19 @@ public class Controller {
 
 					System.out.println("You must orther at least one pizza ");
 			} else {
-				Item item = hibernate.findItemById(Integer.valueOf(string));
-				if (item != null) {
-					if (item.getItemType() == ItemType.pizza)
-						pizzaInBasket = true;
-					basket.add(item);
+				try {
+					Item item = hibernate.findItemById(Integer.valueOf(string));
+					if (item != null) {
+						if (item.getItemType() == ItemType.pizza)
+							pizzaInBasket = true;
+						basket.add(item);
+					}
+					
+				} catch (Exception e) {
+					
 				}
 				System.out.println(basket);
-				// add item to orders_items
+				
 			}
 		}
 
@@ -280,20 +285,21 @@ public class Controller {
 
 		System.out.println("Please enter your discount code (hit return if you dont have )");
 
-		String discount = s.nextLine();
-		if (!discount.equals("")) {
-			Boolean duplicated = hibernate.findDiscountDuplicate(discount);
+		String discountCode = s.nextLine();
+		if (!discountCode.equals("")) {
+			Boolean duplicated = hibernate.findDiscountDuplicate(discountCode);
 			if (duplicated) {
 				System.err.println("Discout code already used ");
-				discount = null;
+				discountCode = null;
 			}
+			
 		}
 
 		String newdiscount = generateDiscout(basket);
 		if (!newdiscount.equals("-1"))
 			System.out.printf("Your discount Code is  %s ", newdiscount);
 
-		Order order = completCheckOut(basket, newCustomer, discount);
+		Order order = completCheckOut(basket, newCustomer, discountCode);
 
 		printConfirmation(order);
 	}
@@ -307,6 +313,8 @@ public class Controller {
 			System.out.printf("%s \n ", item.getName());
 
 		}
+		System.out.printf("Price : %6.2f € \n ", order.getPrice());
+		
 
 	}
 
