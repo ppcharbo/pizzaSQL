@@ -37,7 +37,7 @@ CREATE TABLE `riders` (
 CREATE TABLE `orders` (
   `id` int NOT NULL AUTO_INCREMENT,
   `idcustomer` int NOT NULL,
-  `idrider` int NOT NULL,
+  `idrider` int DEFAULT null,
   `price` double NOT NULL,
   `ready_at` timestamp NOT NULL,
   `picked_up_at` timestamp DEFAULT NULL,

@@ -38,7 +38,7 @@ Table "riders" {
 Table "orders" {
   "id" int [pk, not null ,increment]
   "idcustomer" int [pk, not null]
-  "idrider" int [not null]
+  "idrider" int [default: null]
   "price" double [not null]
   "ready_at" timestamp [not null]
   "picked_up_at" timestamp [default: NULL]

@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +25,7 @@ public class Hibernate {
 	public static final String dessertSQL = "SELECT id,name, price FROM items WHERE items_type_id = '3'";
 	public static final String isVeggieSQL = "SELECT veggie from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?";
 	public static final String priceIngredientSQL = "SELECT price from items_ingredients JOIN ingredients i on i.id = items_ingredients.ingredients_id  WHERE items_id = ?";
-	public static final String createOrdersSQL = "insert into orders(idcustomer,idrider,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?,?)";
+	public static final String createOrdersSQL = "insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
 	public static final String createOrdersDetailSQL = "insert into orders_items(orders_id,items_id) values(?,?)";
 	private Connection conn;
 
@@ -231,30 +232,42 @@ public class Hibernate {
 	public void completCheckOut(Collection<Item> basket, Customer customer) throws Exception {
 
 		int idcustomer = Integer.valueOf(customer.getId());
-		int idrider = -1;
 		Timestamp ready_at= new Timestamp(System.currentTimeMillis());
 		Timestamp picked_up_at=null;
 		boolean delivered=false;
 		String discount_code=null;
-		PreparedStatement prepareStatement = conn.prepareStatement(createOrdersSQL);
-		prepareStatement.setInt(1, idcustomer);
-		prepareStatement.setInt(2, idrider);
-		prepareStatement.setDouble(3, idrider);
-		prepareStatement.setTimestamp(4, ready_at);
-		prepareStatement.setTimestamp(5, picked_up_at);
-		prepareStatement.setBoolean(6, delivered);
-		prepareStatement.setString(7, discount_code);
-		prepareStatement.executeUpdate();
-		ResultSet generatedKeys = prepareStatement.getGeneratedKeys();
-		int orderId = generatedKeys.getInt(0);
+		double price=findPrice(basket);
+		//insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(createOrdersSQL,Statement.RETURN_GENERATED_KEYS);
+		ps.setInt(1, idcustomer);
+		ps.setDouble(2, price);
+		ps.setTimestamp(3, ready_at);
+		ps.setTimestamp(4, picked_up_at);
+		ps.setBoolean(5, delivered);
+		ps.setString(6, discount_code);
+		ps.executeUpdate();
+		ResultSet generatedKeys = ps.getGeneratedKeys();
 		
+		if(generatedKeys.next()){
+			Long sorderId = generatedKeys.getLong(1);
+			System.out.println(sorderId);
+			for (Item item : basket) {
+				ps = conn.prepareStatement(createOrdersDetailSQL);
+				ps.setLong(1, sorderId);
+				ps.setInt(2, Integer.valueOf(item.getId()));
+				ps.executeUpdate();
+			}
+			}
+	
+	}
+
+	private double findPrice(Collection<Item> basket) {
+		
+		Double price=0.0;
 		for (Item item : basket) {
-			prepareStatement = conn.prepareStatement(createOrdersDetailSQL);
-			prepareStatement.setInt(1, orderId);
-			prepareStatement.setInt(1, Integer.valueOf(item.getId()));
-			prepareStatement.executeUpdate();
+			price +=item.getPrice();
 		}
 		
-
+		return price;
 	}
 }
