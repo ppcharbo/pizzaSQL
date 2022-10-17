@@ -20,7 +20,7 @@ import pizzaSQL.model.Rider;
 
 public class Hibernate {
 	public static final String listAllCustomersSQL = "SELECT * FROM customers";
-	public static final String findOrderLessThen5Min="select * from orders where    NOW() < ready_at - INTERVAL 5  minute";
+	public static final String findOrderLessThen5Min = "select * from orders where    NOW() < ready_at - INTERVAL 5  minute";
 	public static final String listAllOrdersSQL = "SELECT * FROM Orders";
 	public static final String deleteOrderDetail = "delete from orders_items where orders_id=?";
 	public static final String deleteOrderById = "delete from orders  where id=?";
@@ -40,6 +40,7 @@ public class Hibernate {
 	public static final String createOrdersSQL = "insert into orders(idcustomer,price,ready_at,picked_up_at,delivered,discount_code) values(?,?,?,?,?,?)";
 	public static final String createOrdersDetailSQL = "insert into orders_items(orders_id,items_id) values(?,?)";
 	public static final String findDiscountCodeSQL = "select * from orders where discount_code= ? ";
+	public static final String findAllPendingOrdersSQL = "select * from orders where delivered='false'";
 	private Connection conn;
 
 	public Hibernate(String user, String passwd, String URL) throws ClassNotFoundException {
@@ -448,7 +449,7 @@ public class Hibernate {
 	}
 
 	public Collection<Order> findAllOrdersInFiveMinutes() throws Exception {
-		 
+
 		Collection<Order> ret = new ArrayList<Order>();
 
 		java.sql.Statement statement = conn.createStatement();
@@ -456,27 +457,38 @@ public class Hibernate {
 		while (rs.next()) {
 
 			Integer id = rs.getInt("id");
-			Order order =findOrderById(id);
-			ret.add(order );
+			Order order = findOrderById(id);
+			ret.add(order);
 
 		}
 		return ret;
 	}
 
 	public void deleteOrders(Integer id) throws Exception {
-		
+
 		PreparedStatement ps = conn.prepareStatement(deleteOrderDetail);
 		ps.setInt(1, id);
-		 ps.executeUpdate();
-		
-		
+		ps.executeUpdate();
+
 		ps = conn.prepareStatement(deleteOrderById);
 		ps.setInt(1, id);
 		ps.executeUpdate();
-	
-		
-		
 
+	}
 
+	public Collection<Order> findAllPendingOrder() throws Exception {
+
+		Collection<Order> ret = new ArrayList<Order>();
+
+		java.sql.Statement statement = conn.createStatement();
+		ResultSet rs = statement.executeQuery(findAllPendingOrdersSQL);
+		while (rs.next()) {
+
+			Integer id = rs.getInt("id");
+			Order order = findOrderById(id);
+			ret.add(order);
+
+		}
+		return ret;
 	}
 }

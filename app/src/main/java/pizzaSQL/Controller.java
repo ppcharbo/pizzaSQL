@@ -243,9 +243,12 @@ public class Controller {
 
 	}
 
-	private void listOfOrder() {
+	private void listOfOrder() throws Exception {
 		System.out.println("inside listOfOrder methd");
-
+		Collection<Order> collection = hibernate.findAllPendingOrder();
+		for (Order order : collection) {
+			System.out.printf("id : %d customer name :%s  address : %s\n", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress());
+		}
 	}
 
 	private void makeOrder(Scanner s) throws Exception {
@@ -333,6 +336,7 @@ public class Controller {
 		System.out.printf("Order id %d \n", order.getId());
 		System.out.printf("Client Name : %s\n", order.getCustomer().getName());
 		System.out.printf("Address : %s \n ", order.getCustomer().getAddress());
+		System.out.printf("Ready at : %s \n ", order.getReadtAt());
 		Collection<Item> details = order.getDetails();
 		for (Item item : details) {
 			System.out.printf("%s \n ", item.getName());

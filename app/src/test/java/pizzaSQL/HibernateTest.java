@@ -157,4 +157,20 @@ public class HibernateTest {
 		assertNull(deletedOrder);
 	}
 
+	@Test
+	public void findAllPendingOrderTest() throws Exception {
+		Hibernate hibernate = new Hibernate(Controller.user, Controller.passwd, Controller.URL);
+		Collection<Item> basket = new ArrayList<Item>();
+		basket.add(hibernate.findItemById(1));
+		Customer customer = hibernate.findCustomerById(1);
+		Order completCheckOut = hibernate.completCheckOut(basket, customer, null);
+		System.out.println("Created order " + completCheckOut);
+		Collection<Order> collection = hibernate.findAllPendingOrder();
+		for (Order order : collection) {
+			if (order.getId().equals(completCheckOut.getId()))
+				return;
+		}
+		fail("Could not find pending order ");
+		
+	}
 }
