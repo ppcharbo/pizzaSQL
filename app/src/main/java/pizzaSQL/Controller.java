@@ -368,9 +368,6 @@ public class Controller {
 
 	}
 
-	public static void main(String[] args) throws Exception {
-		new Controller().mainLoop(false);
-	}
 	
 	public void listOfOrder() throws Exception {
 		
@@ -411,12 +408,8 @@ public class Controller {
 		
 	}
 
-	
-	
-	
-	
-	
-	
-	
+	public static void main(String[] args) throws Exception {
+		new Controller().mainLoop(false);
+	}
 	
 }
