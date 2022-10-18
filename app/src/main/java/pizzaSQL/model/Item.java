@@ -2,8 +2,6 @@ package pizzaSQL.model;
 
 import java.util.Collection;
 
-import com.mysql.cj.PingTarget;
-
 public class Item {
 
 	private Integer id;

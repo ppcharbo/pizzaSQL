@@ -61,15 +61,15 @@ public class Controller {
 				makeOrder(s);
 				break;
 			case "2":
-				System.out.println("\n Available pizza \n");
+				System.out.println("\nAvailable pizza: \n");
 				getListPizza(false);
 				break;
 			case "3":
-				System.out.println("\n Available drinks \n");
+				System.out.println("\nAvailable drinks: \n");
 				getListDrinks(false);
 				break;
 			case "4":
-				System.out.println("\n Available dessert \n");
+				System.out.println("\nAvailable dessert: \n");
 				getListDesserts(false);
 				break;
 			case "5":
@@ -92,9 +92,10 @@ public class Controller {
 	private void cancelOrders(Scanner s) throws Exception {
 
 		Collection<Order> collection = hibernate.findAllOrdersInFiveMinutes();
-		System.out.println("please select the orther you want to cancel");
+		System.out.println("Please type the id of the order you want to cancel:");
+		System.out.println(" ");
 		for (Order order : collection) {
-			System.out.printf(" order id= %d Customer=  %s Address= -%s\n", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress());
+			System.out.printf("Order id: %d Customer name: %s Address: %s\n", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress());
 		}
 		Integer valueOf = null;
 		try {
@@ -206,7 +207,8 @@ public class Controller {
 	}
 
 	private void listAllCustomer() throws Exception {
-		System.out.println("inside listAllCustomer methd");
+		System.out.println("Here we have a list of the current customers:");
+		System.out.println(" ");
 
 		Collection<Customer> list = hibernate.findAllCustomers();
 
@@ -218,26 +220,26 @@ public class Controller {
 			String phone = customer.getPhone();
 			;
 
-			System.out.println("[Customer id: " + id + " Name: " + name + " email: " + email + " Phone num: " + phone);
+			System.out.println("Your customer id: " + id + ", Name: " + name + ", Email: " + email + ", Phone num: " + phone);
 
 		}
 
 	}
 
 	private Customer newCustomer(Scanner s) throws SQLException {
-		System.out.println("inside new Customer methode");
-		System.out.println("insert name ");
+		
+		System.out.println("Insert your name: ");
 
 		String name = s.nextLine();
-		System.out.println("insert postal code ");
+		System.out.println("Insert your postal code: ");
 		Integer postalCode = Integer.valueOf(s.nextLine());
-		System.out.println("insert address ");
+		System.out.println("Insert your address: ");
 		String address = s.nextLine();
-		System.out.println("insert email ");
+		System.out.println("Insert your email: ");
 		String email = s.nextLine();
-		System.out.println("insert phone ");
+		System.out.println("Insert your phone number: ");
 		String phone = s.nextLine();
-		System.out.println("insert a password ");
+		System.out.println("Insert your password: ");
 		String password = s.nextLine();
 
 		Customer co = hibernate.createCustomer(name, postalCode, address, email, phone, password);
@@ -248,11 +250,13 @@ public class Controller {
 
 	private void makeOrder(Scanner s) throws Exception {
 
-		System.out.println("Welcome , please enter your choices");
+		System.out.println("Welcome, please enter your choices:");
+		System.out.println(" ");
 		getListPizza(true);
 		getListDrinks(true);
 		getListDesserts(true);
 		Collection<Item> basket = new ArrayList<Item>();
+		System.out.println(" ");
 		System.out.println("Type the id of the products you wish to purchase. When you are done, type 'd' ");
 		Boolean pizzaInBasket = false;
 		while (true) {
@@ -284,35 +288,36 @@ public class Controller {
 //		Now we must handle the customer
 		Customer newCustomer = null;
 		loop: while (true) {
-			System.out.println("\n Please choose your customer");
+			System.out.println("\nPlease choose your customer:");
+			System.out.println(" ");
 			System.out.println("0 - Create Customer ");
-			System.out.println("2 - List All customers ");
+			System.out.println("1 - List All customers ");
 
 			String str = s.nextLine();
 			switch (str) {
 			case "0":
 				newCustomer = newCustomer(s);
 				break loop;
-			case "2":
+			case "1":
 				listAllCustomer();
 				System.out.println("Please enter customer ID");
 				Integer id = Integer.valueOf(s.nextLine());
 				newCustomer = hibernate.findCustomerById(id);
 				if (newCustomer == null) {
-					System.err.println("we could not find your id" + id);
+					System.err.println("Sorry, we could not find your id "+id+" in our database");
 				} else
 					break loop;
 			}
 
 		}
 
-		System.out.println("Please enter your discount code (hit return if you dont have )");
+		System.out.println("Please enter your discount code (if you dont have one, hit return)");
 
 		String discountCode = s.nextLine();
 		if (!discountCode.equals("")) {
 			Boolean duplicated = hibernate.findDiscountDuplicate(discountCode);
 			if (duplicated) {
-				System.err.println("Discout code already used ");
+				System.err.println("Discout code already used");
 				discountCode = null;
 			}
 
@@ -328,16 +333,17 @@ public class Controller {
 	}
 
 	public void printConfirmation(Order order) {
-		System.out.printf("Order id %d \n", order.getId());
-		System.out.printf("Client Name : %s\n", order.getCustomer().getName());
-		System.out.printf("Address : %s \n ", order.getCustomer().getAddress());
-		System.out.printf("Ready at : %s \n ", order.getReadtAt());
+		System.out.printf("Order id:\t %d \n", order.getId());
+		System.out.printf("Client Name:\t %s\n", order.getCustomer().getName());
+		System.out.printf("Address:\t %s \n", order.getCustomer().getAddress());
+		System.out.printf("Ready at:\t %s \n", order.getReadtAt());
+		System.out.println("Your order's items below:");
 		Collection<Item> details = order.getDetails();
 		for (Item item : details) {
-			System.out.printf("%s \n ", item.getName());
+			System.out.printf("\t%s \n", item.getName());
 
 		}
-		System.out.printf("Price : %6.2f € \n ", order.getPrice());
+		System.out.printf("Price:\t %6.2f € \n", order.getPrice());
 
 	}
 
@@ -370,18 +376,22 @@ public class Controller {
 		
 		hibernate.resetRiderCameBack();
 		
-		System.out.println("inside listOfOrder methd");
+		System.out.println("List of order ready to leave:");
+		System.out.println(" ");
 		Collection<Order> ordersList = hibernate.findAllPendingOrder();
 		for (Order order : ordersList) {
-			System.out.printf("id : %d customer name :%s  address : %s code %s \n", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress(),order.getCustomer().getPostalCode());
+			System.out.printf("Id: %d Customer name: %s  Address: %s Postal code: %s \n", order.getId(), order.getCustomer().getName(), order.getCustomer().getAddress(),order.getCustomer().getPostalCode());
 		}
-		System.out.println("finding free riders ");
+		
 		Collection <Rider> freeRider=hibernate.findFreeRiders();
-		System.out.println("Found the following free riders ");
+		System.out.println(" ");
+		System.out.println("Found the following free riders: ");
+		System.out.println(" ");
 		for (Rider rider : freeRider) {
 			System.out.println(rider);
 		}
-		System.out.println("now we check for each free rider if there's an order to delivers");
+		System.out.println(" ");
+		System.out.println("Now we check for each free rider if there's an order to delivers");
 		
 		for (Order o : ordersList) {
 			freeRider=hibernate.findFreeRiders();

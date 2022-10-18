@@ -31,7 +31,7 @@ CREATE TABLE `riders` (
   `id` int PRIMARY KEY NOT NULL,
   `name` varchar(45) DEFAULT NULL,
   `cameBack` timestamp DEFAULT NULL,
-  `available` tinyint NOT NULL DEFAULT "0",
+  `available` tinyint NOT NULL DEFAULT "1",
   `postal_code` int NOT NULL
 );
 

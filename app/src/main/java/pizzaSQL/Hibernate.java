@@ -78,6 +78,7 @@ public class Hibernate {
 		return price;
 	}
 
+	@SuppressWarnings("unused")
 	private boolean isVeggie(Integer id) throws SQLException {
 
 		PreparedStatement statement = conn.prepareStatement(isVeggieSQL);
@@ -102,7 +103,7 @@ public class Hibernate {
 
 			Integer id = resultPizza.getInt("id");
 			String name = resultPizza.getString("name");
-			Boolean isVeggie = isVeggie(id);
+			
 
 			double price = getPriceOfIngredients(id) / 100;
 //			FIXME
@@ -404,6 +405,7 @@ public class Hibernate {
 	 * discount_code | varchar(10) | YES | | NULL | |
 	 * 
 	 */
+	@SuppressWarnings("unused")
 	private Collection<Order> findAllOrders() throws Exception {
 		Collection<Order> ret = new ArrayList<Order>();
 

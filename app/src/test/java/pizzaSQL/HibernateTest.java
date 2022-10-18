@@ -250,6 +250,7 @@ public class HibernateTest {
 		basket.add(hibernate.findItemById(1));
 		Order completCheckOut = hibernate.completCheckOut(basket, customer, null);
 		System.out.println("Created order " + completCheckOut);
+		@SuppressWarnings("unused")
 		Order myorder = hibernate.findOrderById(completCheckOut.getId());
 
 		controller.listOfOrder();

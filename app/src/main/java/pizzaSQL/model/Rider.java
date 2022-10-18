@@ -68,7 +68,7 @@ public class Rider {
 
 	@Override
 	public String toString() {
-		return "Rider [id=" + id + ", name=" + name + ", available=" + available + ", postalCode=" + postalCode + "]";
+		return "Rider id: " + id + ", Name: " + name + ", Available: " + available + ", Postal code: " + postalCode ;
 	}
 
 }

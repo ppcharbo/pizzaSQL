@@ -32,31 +32,31 @@ insert into items_type(id,type) values('3','dessert');
 /*
  PIZZAS
  */
-insert into items(items_type_id, name) values ('1','marinara');
-insert into items(items_type_id, name) values ('1','margherita');
-insert into items(items_type_id, name) values ('1','prosciutto e funghi');
+insert into items(items_type_id, name) values ('1','Marinara');
+insert into items(items_type_id, name) values ('1','Margherita');
+insert into items(items_type_id, name) values ('1','Prosciutto e funghi');
 insert into items(items_type_id, name) values ('1','4 formaggi');
-insert into items(items_type_id, name) values ('1','diavola');
-insert into items(items_type_id, name) values ('1','ligure');
-insert into items(items_type_id, name) values ('1','salsiccia e friarielli');
-insert into items(items_type_id, name) values ('1','vegetariana');
-insert into items(items_type_id, name) values ('1','tonno e cipolla');
-insert into items(items_type_id, name) values ('1','speck e brie');
-insert into items(items_type_id, name) values ('1','mortadella e pistacchi');
+insert into items(items_type_id, name) values ('1','Diavola');
+insert into items(items_type_id, name) values ('1','Ligure');
+insert into items(items_type_id, name) values ('1','Salsiccia e friarielli');
+insert into items(items_type_id, name) values ('1','Vegetariana');
+insert into items(items_type_id, name) values ('1','Tonno e cipolla');
+insert into items(items_type_id, name) values ('1','Speck e brie');
+insert into items(items_type_id, name) values ('1','Mortadella e pistacchi');
 /*
  DRINKS
  */
-insert into items(items_type_id, name,price) values ('2', 'coca cola','2');
-insert into items(items_type_id, name,price) values ('2', 'coca cola zero','2');
-insert into items(items_type_id, name,price) values ('2', 'fanta','2');
-insert into items(items_type_id, name,price) values ('2', 'sprite','2');
-insert into items(items_type_id, name,price) values ('2', 'orangina','3');
+insert into items(items_type_id, name,price) values ('2', 'Coca cola','2');
+insert into items(items_type_id, name,price) values ('2', 'Coca cola zero','2');
+insert into items(items_type_id, name,price) values ('2', 'Fanta','2');
+insert into items(items_type_id, name,price) values ('2', 'Sprite','2');
+insert into items(items_type_id, name,price) values ('2', 'Orangina','3');
 /*
  DESSERTS
  */
-insert into items(items_type_id, name,price) values ('3', 'tiramisù','10');
-insert into items(items_type_id, name,price) values ('3', 'torta alle mele','6');
-insert into items(items_type_id, name,price) values ('3', 'panna cotta','8');
+insert into items(items_type_id, name,price) values ('3', 'Tiramisù','10');
+insert into items(items_type_id, name,price) values ('3', 'Torta alle mele','6');
+insert into items(items_type_id, name,price) values ('3', 'Panna cotta','8');
 /*
  LINK INGREDIENTS TO PIZZA
  */
