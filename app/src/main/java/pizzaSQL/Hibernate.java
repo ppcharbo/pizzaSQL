@@ -308,7 +308,9 @@ public class Hibernate {
 			price += item.getPrice();
 		}
 		if (discount_code != "") {
+			
 			double newPrice = price * 0.9;
+			
 			System.out.printf("\n applying discount code to price:%6.2f --> new price is %6.2f \n ", price, newPrice);
 		}
 		return price;
